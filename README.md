@@ -151,10 +151,70 @@ Abaixo, cada funcionalidade é quebrada em sub-tarefas necessárias para impleme
  
 - **Controle de estoque de tecido/aviamento** — complexidade desnecessária para o porte de uma costureira pequena/autônoma; faz mais sentido para ateliês de grande porte
 ## Stack
+
+
+ ## Decisões arquiteturais
  
-- **Back-end:** Java
-- **Front-end:** a definir
-- **Persistência:** banco de dados via servidor (a definir)
+- **Comunicação front-back:** via API REST — o front faz requisições (fetch) e trata a resposta de forma assíncrona (Promises/async-await)
+- **Back-end:** Java + **Spring Boot**. Uso de camadas (Controller/Service/Repository) fica condicionado ao que o professor cobrar — se exigir essa profundidade, será implementado; senão, fica mais simples
+- **Front-end:** **HTML + JavaScript puro + Tailwind CSS** — decisão consciente de não usar React: um dos integrantes da dupla não tem familiaridade com a lib e ela será vista em outra disciplina futuramente; preferiu-se não arriscar o prazo de entrega com uma curva de aprendizado desnecessária
+- **Banco de dados:** PostgreSQL
+## Estrutura de pastas (front-end)
+ 
+Estrutura sugerida seguindo convenções comuns de mercado para projetos em JS puro + Tailwind, separando a camada que fala com a API da camada de tela:
+ 
+```
+front/
+├── index.html                  # tela inicial (ex.: login ou dashboard)
+├── pages/
+│   ├── os/
+│   │   ├── os-lista.html
+│   │   └── os-form.html
+│   ├── clientes/
+│   │   ├── clientes-lista.html
+│   │   └── clientes-form.html
+│   ├── orcamentos/
+│   │   └── orcamentos-lista.html
+│   ├── vitrine/
+│   │   └── vitrine.html         # página pública, sem login
+│   └── auth/
+│       └── login.html
+├── src/
+│   ├── api/                     # camada de comunicação com o back (fetch)
+│   │   ├── httpClient.js        # configuração central (baseURL, headers, tratamento de erro)
+│   │   ├── osApi.js
+│   │   ├── clienteApi.js
+│   │   ├── servicoApi.js
+│   │   ├── orcamentoApi.js
+│   │   └── authApi.js
+│   ├── pages/                   # lógica JS específica de cada tela
+│   │   ├── os/
+│   │   │   ├── os-lista.js
+│   │   │   └── os-form.js
+│   │   ├── clientes/
+│   │   │   └── clientes-lista.js
+│   │   └── auth/
+│   │       └── login.js
+│   ├── components/               # pedaços de UI reaproveitáveis (ex.: navbar, modal, card de OS)
+│   │   ├── navbar.js
+│   │   └── osCard.js
+│   └── utils/                    # funções auxiliares (formatação de data, validação, etc.)
+│       ├── formatDate.js
+│       └── validators.js
+├── styles/
+│   └── input.css                 # diretivas do Tailwind (@tailwind base/components/utilities)
+├── assets/
+│   └── img/                      # imagens estáticas (ex.: logo do ateliê)
+├── tailwind.config.js
+└── package.json
+```
+ 
+Princípios por trás dessa estrutura:
+- **`api/`** concentra só o que conversa com o back-end (monta URL, faz `fetch`, trata erro de rede) — se um endpoint mudar, mexe-se num lugar só
+- **`pages/`** tem a lógica de cada tela (o que acontece quando um botão é clicado, como os dados da API são usados para preencher a tela)
+- **`components/`** guarda pedaços de interface repetidos em mais de uma tela
+- Cada entidade do domínio (OS, Cliente, Serviço, Orçamento) tem seu próprio arquivo de API, espelhando as rotas do back-end
 ## Equipe
  
 Projeto desenvolvido em dupla.
+ 
