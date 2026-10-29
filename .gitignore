@@ -13,3 +13,6 @@ Thumbs.db
 # Editores
 .vscode/
 .idea/
+
+# Material de ferramenta de design (revisões e superfícies) — não faz parte do produto
+.impeccable/
