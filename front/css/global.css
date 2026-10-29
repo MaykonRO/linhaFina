@@ -1,0 +1,302 @@
+/*
+ * Linha Fina — estilos globais.
+ * A identidade entra aqui e nos tokens; componentes só compõem as classes
+ * compartilhadas abaixo e as próprias de css/components.css.
+ */
+
+/* ---------- Base ---------- */
+
+body {
+  background-color: var(--lf-canvas);
+  color: var(--lf-ink);
+  min-height: 100dvh;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--lf-primary) 42%, transparent);
+  color: var(--lf-ink);
+}
+
+:root {
+  caret-color: var(--lf-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--lf-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- Superfícies do navegador ---------- */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--lf-edge) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--lf-edge);
+  border-radius: 8px;
+  border: 2px solid var(--lf-canvas);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3d3752;
+}
+
+/* ---------- Costura (assinatura visual) ----------
+   Ponto reto de máquina: traço curto, intervalo curto. */
+
+.stitch {
+  height: 2px;
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--lf-primary) 55%, transparent) 55%,
+    transparent 0
+  );
+  background-size: 9px 2px;
+  background-repeat: repeat-x;
+}
+
+.stitch--soft {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--lf-ink-faint) 45%, transparent) 55%,
+    transparent 0
+  );
+}
+
+.stitch--v {
+  width: 2px;
+  height: auto;
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--lf-primary) 55%, transparent) 55%,
+    transparent 0
+  );
+  background-size: 2px 9px;
+  background-repeat: repeat-y;
+}
+
+/* ---------- Campos de formulário ---------- */
+
+.input-base {
+  width: 100%;
+  min-width: 0;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--lf-edge);
+  background-color: var(--lf-elevated);
+  color: var(--lf-ink);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.55rem 0.75rem;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.input-base::placeholder {
+  color: var(--lf-ink-faint);
+}
+
+.input-base:hover:not(:disabled):not([aria-invalid='true']) {
+  border-color: #3d3752;
+}
+
+.input-base:focus {
+  outline: none;
+  border-color: var(--lf-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--lf-primary) 22%, transparent);
+}
+
+.input-base[aria-invalid='true'] {
+  border-color: var(--lf-danger);
+}
+
+.input-base:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+select.input-base {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23B2AEC2' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  padding-right: 2rem;
+}
+
+input[type='search'].input-base::-webkit-search-cancel-button {
+  display: none;
+}
+
+.input-textarea {
+  resize: vertical;
+}
+
+/* ---------- Badges de status ---------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  padding: 0.3rem 0.6rem;
+  white-space: nowrap;
+}
+
+.badge-ponto {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background: currentColor;
+}
+
+.badge-icone {
+  display: inline-flex;
+}
+
+.badge--success {
+  color: color-mix(in oklab, var(--lf-success) 82%, white);
+  background: color-mix(in oklab, var(--lf-success) 15%, transparent);
+  border-color: color-mix(in oklab, var(--lf-success) 32%, transparent);
+}
+
+.badge--warning {
+  color: color-mix(in oklab, var(--lf-warning) 84%, white);
+  background: color-mix(in oklab, var(--lf-warning) 15%, transparent);
+  border-color: color-mix(in oklab, var(--lf-warning) 32%, transparent);
+}
+
+.badge--danger {
+  color: color-mix(in oklab, var(--lf-danger) 84%, white);
+  background: color-mix(in oklab, var(--lf-danger) 15%, transparent);
+  border-color: color-mix(in oklab, var(--lf-danger) 32%, transparent);
+}
+
+.badge--info {
+  color: color-mix(in oklab, var(--lf-info) 82%, white);
+  background: color-mix(in oklab, var(--lf-info) 15%, transparent);
+  border-color: color-mix(in oklab, var(--lf-info) 32%, transparent);
+}
+
+.badge--primary {
+  color: #b79bfb;
+  background: color-mix(in oklab, var(--lf-primary) 16%, transparent);
+  border-color: color-mix(in oklab, var(--lf-primary) 34%, transparent);
+}
+
+.badge--neutral {
+  color: var(--lf-ink-soft);
+  background: color-mix(in oklab, var(--lf-ink-faint) 16%, transparent);
+  border-color: color-mix(in oklab, var(--lf-ink-faint) 32%, transparent);
+}
+
+.badge--teal {
+  color: color-mix(in oklab, var(--lf-teal) 84%, white);
+  background: color-mix(in oklab, var(--lf-teal) 14%, transparent);
+  border-color: color-mix(in oklab, var(--lf-teal) 30%, transparent);
+}
+
+.badge--lilas {
+  color: color-mix(in oklab, var(--lf-lilas) 86%, white);
+  background: color-mix(in oklab, var(--lf-lilas) 15%, transparent);
+  border-color: color-mix(in oklab, var(--lf-lilas) 32%, transparent);
+}
+
+/* ---------- Utilidades ---------- */
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.card-surface {
+  background-color: var(--lf-surface);
+  border: 1px solid var(--lf-edge);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.pop-surface {
+  background-color: var(--lf-elevated);
+  border: 1px solid var(--lf-edge);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-pop);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.text-sucesso {
+  color: var(--lf-success);
+}
+
+.text-perigo {
+  color: var(--lf-danger-texto);
+}
+
+.text-atencao {
+  color: var(--lf-warning);
+}
+
+/* ---------- Ícones (SVG inline, cor por currentColor) ---------- */
+
+.ic {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.ic--12 { width: 0.75rem; height: 0.75rem; }
+.ic--14 { width: 0.875rem; height: 0.875rem; }
+.ic--16 { width: 1rem; height: 1rem; }
+.ic--18 { width: 1.125rem; height: 1.125rem; }
+.ic--20 { width: 1.25rem; height: 1.25rem; }
+
+.ic-caixa {
+  display: inline-flex;
+}
+
+.girar {
+  animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Movimento ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

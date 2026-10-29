@@ -1,0 +1,12 @@
+# Normalização de quebras de linha: o repositório guarda LF,
+# o checkout local no Windows pode usar CRLF.
+* text=auto eol=lf
+
+# Binários
+*.woff2 binary
+*.woff binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary

@@ -217,4 +217,37 @@ Princípios por trás dessa estrutura:
 ## Equipe
  
 Projeto desenvolvido em dupla.
+
+## Front-end implementado
  
+A interface completa está em **[`front/`](front/)** — HTML5 + CSS3 + JavaScript puro (módulos ES nativos), sem framework, sem bundler e sem etapa de build. A pasta `front/` substitui a estrutura *sugerida* acima: na implementação, o CSS é próprio (design system em `front/css/`) em vez de Tailwind, e a camada de dados ficou em `front/js/app/store.js` + `front/js/services/api/`.
+
+**Estado atual:** a interface está pronta e navegável, mas **sem back-end conectado**. Não há seed, dados fictícios, autenticação simulada nem persistência de negócio no navegador. As páginas carregam os registros pela futura API REST (Spring Boot + PostgreSQL) e apresentam estados honestos de carregamento, vazio, erro e "integração pendente". Nenhuma ação finge sucesso antes de uma resposta real da API.
+
+### Como rodar o front-end
+
+```bash
+cd front
+node server.mjs        # http://localhost:5180
+```
+
+Sem back-end, o site abre normalmente e mostra o aviso de integração pendente. Para apontar a uma API, defina a configuração antes de carregar os módulos:
+
+```html
+<script>
+  window.LF_API_CONFIG = {
+    baseUrl: 'http://localhost:8080/api',
+    timeoutMs: 10000,
+    credentials: 'include'
+  }
+  // As rotas são configuráveis e ainda dependem do contrato oficial:
+  window.LF_API_ENDPOINTS = {
+    'clientes.listar': '/clientes',
+    'clientes.obter': '/clientes/{id}'
+    // ... demais chaves lógicas de front/js/services/api/index.js
+  }
+</script>
+```
+
+A lista completa de chaves, estados e regras de integração está em **[`front/README.md`](front/README.md)** e em **[`front/js/services/README.md`](front/js/services/README.md)**.
+

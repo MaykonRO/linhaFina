@@ -1,0 +1,11 @@
+# Dependências/legacy (o site é estático — nada precisa ser instalado)
+node_modules
+dist
+dist-ssr
+
+# Ambiente
+*.local
+.env
+
+# Sistema
+.DS_Store

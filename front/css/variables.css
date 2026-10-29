@@ -1,0 +1,60 @@
+/*
+ * Linha Fina — design tokens.
+ * Paleta oficial do projeto exposta como variáveis CSS reutilizáveis.
+ * Nunca use hexes avulsos nos componentes: sempre os tokens abaixo.
+ */
+
+:root {
+  /* Superfícies */
+  --lf-canvas: #121018;   /* fundo principal */
+  --lf-surface: #1b1826;  /* cards e painéis */
+  --lf-elevated: #242033; /* dropdowns, modais, elementos elevados */
+  --lf-edge: #2e2a3e;     /* bordas */
+
+  /* Tipografia */
+  --lf-ink: #f2effa;        /* texto principal */
+  --lf-ink-soft: #b2aec2;   /* texto secundário */
+  --lf-ink-faint: #948fa8;  /* texto discreto (calibrado para contraste AA) */
+
+  /* Marca */
+  --lf-primary: #8b5cf6;         /* roxo principal */
+  --lf-primary-strong: #6d3fd1;  /* roxo hover */
+  --lf-primary-claro: #9d75fa;   /* roxo como texto sobre superfícies escuras (AA) */
+  --lf-primary-botao: #7c4bf1;   /* preenchimento de botão sólido com texto branco (AA) */
+  --lf-primary-ink: #0a0810;     /* texto escuro sobre roxo sólido */
+  --lf-azure: #3b82f6;           /* azul secundário */
+
+  /* Status */
+  --lf-success: #4f9d69;
+  --lf-warning: #d9a441;
+  --lf-danger: #e24c6b;
+  --lf-danger-texto: #ef6f88;  /* texto de perigo com contraste AA */
+  --lf-info: #3b82f6;
+  --lf-danger-botao: #c93d59;        /* preenchimento de botão perigoso (AA) */
+  --lf-danger-botao-forte: #b33550;
+  --lf-faint: #716c85;
+
+  /* Auxiliares — categorias, indicadores e gráficos (uso nunca aleatório) */
+  --lf-teal: #2dd4bf;
+  --lf-rosa: #f472b6;
+  --lf-ciano: #38bdf8;
+  --lf-lilas: #a78bfa;
+  --lf-laranja: #fb923c;
+  --lf-indigo: #818cf8;
+
+  /* Tipografia */
+  --font-sans: 'Gabarito', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Raios */
+  --radius-card: 14px;
+  --radius-control: 10px;
+
+  /* Sombras — sempre deslocadas e suaves, nunca halo */
+  --shadow-card: 0 1px 2px rgba(10, 8, 16, 0.35), 0 10px 28px -14px rgba(10, 8, 16, 0.55);
+  --shadow-pop: 0 4px 8px rgba(10, 8, 16, 0.3), 0 16px 40px -16px rgba(10, 8, 16, 0.65);
+
+  /* Movimento */
+  --dur-curta: 150ms;
+  --dur-media: 200ms;
+  --curva-padrao: cubic-bezier(0.16, 1, 0.3, 1);
+}

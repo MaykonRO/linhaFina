@@ -1,0 +1,14 @@
+{
+  "name": "linha-fina",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Linha Fina — gestão para ateliês de costura. Front-end em HTML, CSS e JavaScript puro (sem frameworks).",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

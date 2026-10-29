@@ -1,0 +1,15 @@
+# Dependências
+node_modules
+dist
+
+# Ambiente / segredos
+.env
+*.local
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
