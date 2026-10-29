@@ -14,9 +14,13 @@ estados honestos de carregamento, vazio, erro e integração pendente.
 O site é **HTML + CSS + JavaScript puro, sem build e sem dependências**. Basta servir
 a pasta por HTTP (módulos ES exigem servidor — não abra por `file://`).
 
+Esta pasta é a raiz do front-end dentro do repositório (`front/`). Todos os
+caminhos são relativos, então o site funciona em qualquer subpasta.
+
 **Com Node.js 18+ (recomendado):**
 
 ```bash
+cd front
 node server.mjs        # http://localhost:5180
 ```
 
@@ -33,6 +37,8 @@ npx serve -l 5180 .
 Abra **http://localhost:5180**. A "Visão geral" (dashboard) fica em `index.html`;
 as demais páginas estão em `pages/`.
 
+> No XAMPP, a URL passa a ser `http://localhost/linha-fina/front/`.
+
 ## Stack
 
 - **HTML5** — páginas estáticas com navegação convencional (`index.html` + `pages/*.html`)
@@ -46,7 +52,7 @@ as demais páginas estão em `pages/`.
 ## Estrutura
 
 ```text
-linha-fina/
+front/                      # raiz do front-end dentro do repositório
 ├── index.html              # Visão geral (dashboard) — entrada da área administrativa
 ├── server.mjs              # Servidor estático mínimo (Node puro, sem dependências)
 ├── pages/                  # Demais páginas
