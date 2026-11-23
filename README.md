@@ -255,13 +255,63 @@ A lista completa de chaves, estados e regras de integração está em **[`front/
 
 O backend fica em [`backend/`](backend/) e utiliza Java 21, Spring Boot 3.5.7, Spring Data JPA/Hibernate, Bean Validation, Maven e PostgreSQL 17.6. A herança `Pessoa → Cliente/Funcionaria` usa estratégia `JOINED` e é exercitada nos CRUDs.
 
-- API: `http://localhost:8080/api`.
-- Frontend: `http://localhost:5180`.
-- Inicialização no Windows: execute [`INICIAR.ps1`](INICIAR.ps1).
-- Testes Java: execute [`TESTAR.ps1`](TESTAR.ps1) ou `mvn test` em `backend/`.
-- Credenciais: copie `backend/.env.example` para `backend/.env`; o arquivo real é ignorado pelo Git.
+### Pré-requisitos
+
+- JDK 21 LTS.
+- Maven 3.9 ou superior.
+- PostgreSQL 16 ou superior (o projeto foi validado com 17.6).
+- Node.js 18 ou superior para o servidor estático do frontend.
+
+### Configurar o PostgreSQL e as variáveis
+
+1. Inicie o PostgreSQL e, usando um usuário administrador do banco, crie o usuário e os bancos de desenvolvimento/teste. Exemplo ajustável à sua instalação:
+
+```sql
+CREATE ROLE linhafina LOGIN PASSWORD 'troque-por-uma-senha-local';
+CREATE DATABASE linhafina OWNER linhafina;
+CREATE DATABASE linhafina_test OWNER linhafina;
+```
+
+2. Copie `backend/.env.example` para `backend/.env` e substitua as senhas locais. Esse arquivo é ignorado pelo Git e não deve ser compartilhado.
+
+```properties
+DB_URL=jdbc:postgresql://localhost:5432/linhafina
+DB_USERNAME=linhafina
+DB_PASSWORD=troque-por-uma-senha-local
+APP_ADMIN_EMAIL=admin@linhafina.local
+APP_ADMIN_PASSWORD=troque-por-outra-senha-local
+APP_ADMIN_NAME=Administracao Local
+```
+
+3. Na primeira execução, se a tabela de usuários estiver vazia, o backend cria o administrador definido por `APP_ADMIN_*` com senha BCrypt. Não existe credencial fixa no código.
+
+### Executar o projeto completo
+
+No terminal do backend:
+
+```bash
+cd backend
+mvn spring-boot:run
+```
+
+Em outro terminal, no frontend:
+
+```bash
+cd front
+node server.mjs
+```
+
+Acesse `http://localhost:5180` e entre com o e-mail/senha configurados em `APP_ADMIN_*`. A API responde em `http://localhost:8080/api`.
+
+No Windows, a preparação local já realizada neste projeto também pode ser iniciada por [`INICIAR.ps1`](INICIAR.ps1), que detecta as ferramentas portáteis existentes e evita duplicar servidores.
+
+### Testes e documentação
+
+- Testes Java: execute [`TESTAR.ps1`](TESTAR.ps1) ou `mvn clean test` em `backend/`.
+- Os testes usam `linhafina_test`, separado do desenvolvimento, nunca H2.
+- O teste E2E `tests/e2e/nucleo.cjs` percorre os formulários reais e limpa apenas os registros que criou.
 - Documentação de estudo: [`DOCUMENTACAO_JAVA.md`](DOCUMENTACAO_JAVA.md).
 - Resultados por fase: [`ACOMPANHAMENTO.md`](ACOMPANHAMENTO.md).
-
-Os testes de integração utilizam o banco separado `linhafina_test`, nunca H2. O teste E2E `tests/e2e/nucleo.cjs` percorre os formulários reais e limpa apenas os registros que criou.
+- Relatório completo: [`RELATORIO_FINAL.md`](RELATORIO_FINAL.md).
+- Coleção para Postman: [`postman/README.md`](postman/README.md).
 
