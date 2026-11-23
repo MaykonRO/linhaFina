@@ -1,6 +1,12 @@
 /* Configuracao real da API Java. Carregar antes dos modulos ES da pagina. */
+const LF_API_BASE_URL = window.LF_API_BASE_URL ?? (
+  ['localhost', '127.0.0.1'].includes(location.hostname)
+    ? 'http://localhost:8080/api'
+    : 'https://linha-fina-api.onrender.com/api'
+)
+
 window.LF_API_CONFIG = {
-  baseUrl: 'http://localhost:8080/api',
+  baseUrl: LF_API_BASE_URL,
   timeoutMs: 10000,
   credentials: 'include',
   headers: {},

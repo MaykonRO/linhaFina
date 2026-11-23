@@ -314,4 +314,5 @@ No Windows, a preparação local já realizada neste projeto também pode ser in
 - Resultados por fase: [`ACOMPANHAMENTO.md`](ACOMPANHAMENTO.md).
 - Relatório completo: [`RELATORIO_FINAL.md`](RELATORIO_FINAL.md).
 - Coleção para Postman: [`postman/README.md`](postman/README.md).
+- Deploy no Render: [`RENDER.md`](RENDER.md) e [`render.yaml`](render.yaml).
 

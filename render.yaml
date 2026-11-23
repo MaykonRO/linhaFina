@@ -1,0 +1,46 @@
+previews:
+  generation: off
+
+services:
+  - type: web
+    name: linha-fina-api
+    runtime: docker
+    repo: https://github.com/MaykonRO/linhaFina
+    branch: main
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/configuracoes
+    envVars:
+      - key: DB_URL
+        value: jdbc:postgresql://${linha-fina-db.host}:${linha-fina-db.port}/linhafina
+      - key: DB_USERNAME
+        value: ${linha-fina-db.user}
+      - key: DB_PASSWORD
+        value: ${linha-fina-db.password}
+      - key: APP_ADMIN_EMAIL
+        value: admin@linhafina.local
+      - key: APP_ADMIN_PASSWORD
+        generateValue: true
+      - key: APP_ADMIN_NAME
+        value: Administracao Render
+      - key: APP_CORS_ORIGINS
+        value: https://linha-fina-web.onrender.com
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: ATELIE_UPLOAD_DIRETORIO
+        value: /app/uploads
+
+  - type: web
+    name: linha-fina-web
+    runtime: static
+    repo: https://github.com/MaykonRO/linhaFina
+    branch: main
+    buildCommand: echo "Frontend estatico, sem etapa de build"
+    staticPublishPath: front
+
+databases:
+  - name: linha-fina-db
+    databaseName: linhafina
+    user: linhafina
+    plan: free
