@@ -6,7 +6,7 @@
  */
 
 import { iniciarStore, acoes } from '../app/store.js'
-import { entrarSessao, iniciarSessao, sessaoAtual } from '../app/sessao.js'
+import { entrarSessao, iniciarSessao, restaurarSessao } from '../app/sessao.js'
 import { navegar, caminho } from '../app/rotas.js'
 import { toast } from '../components/toast.js'
 import { marcaLinhaFina } from '../components/layout.js'
@@ -18,8 +18,10 @@ import { email as validarEmail, vazio } from '../utils/validation.js'
 iniciarStore()
 iniciarSessao()
 
-// Já logado? Vai direto para a visão geral.
-if (sessaoAtual()) navegar('dashboard', null, { substituir: true })
+// Já logado? A sessão HttpOnly é confirmada pela API antes de redirecionar.
+void restaurarSessao().then((sessao) => {
+  if (sessao) navegar('dashboard', null, { substituir: true })
+})
 
 const DESTAQUES = [
   { icone: 'ClipboardList', texto: 'Ordens de serviço com prazos e provas intermediárias' },
@@ -162,7 +164,7 @@ function renderizar() {
             )
           )
         ),
-        h('p', { class: 'login-nota-academica' }, 'Interface do Linha Fina — a autenticação será conectada ao back-end real.')
+        h('p', { class: 'login-nota-academica' }, 'Linha Fina — autenticação conectada ao Spring Boot e ao PostgreSQL.')
       ),
       /* Formulário */
       h(
@@ -182,8 +184,8 @@ function renderizar() {
             h(
               'p',
               { class: 'login-aviso-texto' },
-              h('strong', {}, 'Autenticação pendente.'),
-              ' As credenciais serão enviadas à API somente quando a integração estiver configurada. Nenhuma senha é armazenada neste navegador.'
+              h('strong', {}, 'Sessão real.'),
+              ' As credenciais são verificadas pela API. Nenhuma senha ou sessão é armazenada no armazenamento local deste navegador.'
             )
           ),
           h(

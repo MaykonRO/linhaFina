@@ -1,0 +1,53 @@
+{
+  "fluxos": [
+    {
+      "fluxo": "cliente.criar",
+      "id": "19",
+      "telefone": "11912345678"
+    },
+    {
+      "fluxo": "servico.criar-e-alternar",
+      "id": "12"
+    },
+    {
+      "fluxo": "funcionaria.criar",
+      "id": "20",
+      "tipo": "Funcionaria"
+    },
+    {
+      "fluxo": "ordem.prever-prazo",
+      "previsao": {
+        "dataPrevistaEntrega": "2026-11-25",
+        "horasFila": 0,
+        "horasServico": 24,
+        "diasUteis": 3,
+        "impactosPrazo": []
+      }
+    },
+    {
+      "fluxo": "ordem.criar",
+      "id": "11",
+      "codigo": "OS-000011",
+      "valorFinal": 144
+    },
+    {
+      "fluxo": "ordem.exportar-pdf",
+      "bytes": 1243
+    },
+    {
+      "fluxo": "ordem.avancar-status",
+      "status": "producao"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "axe": [],
+  "verificacoes401AntesDoLogin": 1,
+  "overflow": false,
+  "registros": {
+    "clienteId": "19",
+    "servicoId": "12",
+    "funcionariaId": "20",
+    "ordemId": "11"
+  }
+}

@@ -12,7 +12,7 @@ import { caminho, navegar } from '../app/rotas.js'
 import { toast } from '../components/toast.js'
 import { h, debounce } from '../components/dom.js'
 import { icone } from '../components/icons.js'
-import { pageHeader, badge, botao, botaoLink, avatar, abas, criarSelect, campo, criarTextarea, estadoVazio } from '../components/ui.js'
+import { pageHeader, badge, botao, botaoLink, avatar, abas, criarSelect, campo, criarInput, criarTextarea, estadoVazio } from '../components/ui.js'
 import { criarDataTable } from '../components/datatable.js'
 import { abrirDrawer } from '../components/drawer.js'
 import { abrirModal } from '../components/modal.js'
@@ -20,6 +20,7 @@ import { campoBusca } from '../components/ui.js'
 import { cliente, estaAtrasada, funcionaria, servico } from '../services/estatisticas.js'
 import { STATUS_OS, STATUS_OS_ABERTOS, STATUS_OS_LISTA, STATUS_PAGAMENTO, PROXIMO_STATUS, corCategoria } from '../utils/status.js'
 import { adicionarDias, compararTexto, descreverPrazo, formatarData, formatarMoeda, hojeISO, textoSeguro } from '../utils/format.js'
+import { obterConfigApi } from '../services/api/config.js'
 
 
 const PERIODOS = [
@@ -453,7 +454,7 @@ function abrirDrawerOrdem({ ordem, onFechar, onMudanca }) {
   const dadosServico = servico(db, os.servicoId)
   const responsavel = funcionaria(db, os.responsavelId)
   const atrasada = estaAtrasada(os)
-  const proximoStatus = PROXIMO_STATUS[os.status]
+  const proximoStatus = os.status === 'prova' && os.sobMedida && !os.provaComparecida ? null : PROXIMO_STATUS[os.status]
   const podeEditar = os.status !== 'cancelada' && os.status !== 'entregue'
   const saldo = Math.max((os.valorFinal || 0) - (os.valorPago || 0), 0)
 
@@ -477,9 +478,31 @@ function abrirDrawerOrdem({ ordem, onFechar, onMudanca }) {
       h('p', { class: 'dado-texto-valor' }, valor)
     )
 
-  const rodape =
-    proximoStatus || podeEditar
-      ? h('div', { class: 'drawer-acoes' },
+  const rodape = h('div', { class: 'drawer-acoes' },
+          h('a', {
+            href: `${obterConfigApi().baseUrl}/ordens-servico/${encodeURIComponent(os.id)}/pdf`,
+            class: 'btn btn--secundario btn--sm', target: '_blank', rel: 'noopener',
+          }, 'Baixar PDF'),
+          os.status === 'prova' && os.sobMedida && !os.provaComparecida && h('div', { class: 'drawer-acoes-secundarias' },
+            botao({
+              tamanho: 'sm', children: ['Cliente compareceu'],
+              onClick: async () => {
+                const resultado = await acoes.ordens.registrarProva(os.id, { compareceu: true })
+                if (resultado.ok) {
+                  toast.sucesso('Comparecimento registrado. A peça está pronta para retirada.')
+                  drawer.fechar()
+                  onMudanca?.()
+                } else toast.aviso(resultado.erro)
+              },
+            }),
+            botao({
+              variante: 'secundario', tamanho: 'sm', children: ['Registrar falta'],
+              onClick: () => abrirModalFaltaProva(os, () => {
+                drawer.fechar()
+                onMudanca?.()
+              }),
+            })
+          ),
           proximoStatus &&
             botao({
               tamanho: 'sm',
@@ -519,7 +542,6 @@ function abrirDrawerOrdem({ ordem, onFechar, onMudanca }) {
               })
             )
         )
-      : null
 
   const drawer = abrirDrawer({
     titulo: os.codigo,
@@ -543,6 +565,7 @@ function abrirDrawerOrdem({ ordem, onFechar, onMudanca }) {
       secao('Valores',
         dado('Serviço', formatarMoeda(os.valorServico), true),
         dado('Taxa de urgência', formatarMoeda(os.taxaUrgencia), true),
+        os.taxaGuarda > 0 && dado('Taxa de guarda', formatarMoeda(os.taxaGuarda), true),
         os.desconto > 0 && dado('Desconto', formatarMoeda(os.desconto), true),
         h('div', { class: 'dado-destaque' },
           h('span', { class: 'dado-destaque-rotulo' }, 'Valor final'),
@@ -555,6 +578,7 @@ function abrirDrawerOrdem({ ordem, onFechar, onMudanca }) {
       ),
       secao('Datas',
         dado('Entrada', formatarData(os.dataEntrada), true),
+        os.dataPronta && dado('Pronta em', formatarData(os.dataPronta), true),
         os.dataProva && dado('Prova', formatarData(os.dataProva), true),
         dado('Previsão de entrega',
           os.dataPrevistaEntrega
@@ -604,6 +628,43 @@ function abrirDrawerOrdem({ ordem, onFechar, onMudanca }) {
   })
 
   return drawer
+}
+
+/* ------------------------------------------------------------------ */
+/* Remarcação de prova por falta da cliente                            */
+/* ------------------------------------------------------------------ */
+
+function abrirModalFaltaProva(os, onSucesso) {
+  const inputData = criarInput({ type: 'date', min: hojeISO() })
+  const campoData = campo({ label: 'Nova data da prova', obrigatorio: true, controle: inputData })
+  const modal = abrirModal({
+    titulo: 'Registrar falta na prova',
+    descricao: `${os.codigo} · a previsão será recalculada pelo back-end.`,
+    icone: 'CalendarDays', tamanho: 'sm',
+    conteudo: h('div', { class: 'pilha-4' },
+      campoData.raiz,
+      h('div', { class: 'confirmar-acoes' },
+        botao({ variante: 'secundario', children: ['Voltar'], onClick: () => modal.fechar() }),
+        botao({
+          children: ['Remarcar prova'],
+          onClick: async () => {
+            if (!inputData.value) {
+              campoData.definirErro('Informe a nova data da prova.')
+              return
+            }
+            const resultado = await acoes.ordens.registrarProva(os.id, { compareceu: false, novaDataProva: inputData.value })
+            if (!resultado.ok) {
+              campoData.definirErro(resultado.erro)
+              return
+            }
+            toast.sucesso('Prova remarcada e previsão recalculada.')
+            modal.fechar()
+            onSucesso?.()
+          },
+        })
+      )
+    ),
+  })
 }
 
 /* ------------------------------------------------------------------ */

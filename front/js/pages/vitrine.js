@@ -13,7 +13,7 @@ import { icone } from '../components/icons.js'
 import { pageHeader, badge, botao, botaoLink, estadoVazio, campo, criarInput, criarTextarea, criarSelect, interruptor, campoMoeda } from '../components/ui.js'
 import { abrirModal } from '../components/modal.js'
 import { confirmar } from '../components/confirm.js'
-import { artePeca, ARTES } from '../components/arte.js'
+import { artePeca, imagemPeca, ARTES } from '../components/arte.js'
 import { formatarMoeda, compararTexto } from '../utils/format.js'
 import { vazio } from '../utils/validation.js'
 
@@ -81,7 +81,7 @@ class PaginaVitrine {
               pecas.map((peca) =>
                 h('li', {},
                   h('article', { class: 'card-surface cartao-peca' },
-                    artePeca(peca.arte),
+                    imagemPeca(peca),
                     h('div', { class: 'cartao-peca-corpo' },
                       h('div', { class: 'cartao-peca-topo' },
                         h('div', { class: 'texto-minimo pilha-1' },
@@ -199,6 +199,11 @@ class PaginaVitrine {
       opcoes: ARTES.map((a) => ({ value: a.id, rotulo: a.rotulo })),
     })
     const areaPrevia = h('div', { class: 'previa-arte' }, artePeca(dados.arte))
+    const inputImagem = criarInput({ type: 'file', accept: 'image/png,image/jpeg,image/webp' })
+    const campoImagem = campo({
+      label: 'Foto da peça (opcional)', dica: 'PNG, JPEG ou WebP, até 5 MB. Sem foto, a ilustração é mantida.',
+      controle: inputImagem,
+    })
     selectArte.addEventListener('change', () => {
       dados.arte = selectArte.value
       areaPrevia.replaceChildren(artePeca(dados.arte))
@@ -252,6 +257,11 @@ class PaginaVitrine {
             toast.erro('Revise os campos destacados.')
             return
           }
+          const arquivo = inputImagem.files[0]
+          if (arquivo && (!['image/png', 'image/jpeg', 'image/webp'].includes(arquivo.type) || arquivo.size > 5 * 1024 * 1024)) {
+            toast.aviso('Use uma imagem PNG, JPEG ou WebP de até 5 MB.')
+            return
+          }
 
           const payload = {
             ...dados,
@@ -262,6 +272,14 @@ class PaginaVitrine {
             ? await acoes.vitrine.atualizar(peca.id, payload)
             : await acoes.vitrine.criar(payload)
           if (resultado.ok) {
+            if (arquivo) {
+              const envio = await acoes.vitrine.enviarImagem(resultado.data.id, arquivo)
+              if (!envio.ok) {
+                toast.aviso(`A peça foi salva, mas a foto não foi enviada: ${envio.erro}`)
+                modal.fechar()
+                return
+              }
+            }
             toast.sucesso(edicao ? 'Peça atualizada.' : 'Peça cadastrada.')
             modal.fechar()
           } else {
@@ -271,6 +289,7 @@ class PaginaVitrine {
       },
         h('div', { class: 'grade-form' }, campoNome.raiz, campoCategoria.raiz),
         campo({ label: 'Descrição', controle: textareaDescricao }).raiz,
+        campoImagem.raiz,
         h('div', { class: 'grade-form' },
           campoPreco.raiz,
           campo({ label: 'Arte', dica: 'Ilustração da galeria pública.', controle: h('div', { class: 'campo-arte' }, selectArte, areaPrevia) }).raiz

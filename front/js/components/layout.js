@@ -12,7 +12,7 @@ import { icone } from './icons.js'
 import { h, aoClicarFora, aoEscape, substituirFilhos } from './dom.js'
 import { avatar, badge } from './ui.js'
 import { toast } from './toast.js'
-import { assinarStore, obterDb } from '../app/store.js'
+import { acoes, assinarStore, obterDb } from '../app/store.js'
 import { assinarSessao, sessaoAtual, sairSessao } from '../app/sessao.js'
 import { caminho, navegar } from '../app/rotas.js'
 import { notificacoes, cliente as buscarCliente } from '../services/estatisticas.js'
@@ -661,7 +661,7 @@ function montarPerfil() {
         { class: 'menu-perfil-cabecalho' },
         h('p', { class: 'menu-titulo' }, sessao?.nome ?? 'Linha Fina'),
         h('p', { class: 'menu-perfil-email' }, sessao?.email ?? 'Usuário não conectado'),
-        badge({ variante: 'neutral', rotulo: 'Integração pendente', classe: 'menu-perfil-selo' })
+        badge({ variante: 'neutral', rotulo: sessao?.papelRotulo ?? 'Sessão não conectada', classe: 'menu-perfil-selo' })
       ),
       h(
         'div',
@@ -685,10 +685,16 @@ function montarPerfil() {
             type: 'button',
             role: 'menuitem',
             class: 'menu-item menu-item--perigo',
-            onClick: () => {
+            onClick: async () => {
               fechar()
+              const resultado = await acoes.autenticacao.sair()
+              if (!resultado.ok) {
+                toast.aviso(resultado.erro)
+                return
+              }
               sairSessao()
-              toast.info('A sessão real será encerrada quando a autenticação estiver integrada.')
+              toast.sucesso('Sessão encerrada.')
+              navegar('login', null, { substituir: true })
             },
           },
           h('span', { class: 'ic-caixa', innerHTML: icone('LogOut', 'ic ic--16') }),

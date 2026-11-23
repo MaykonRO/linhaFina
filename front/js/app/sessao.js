@@ -1,14 +1,17 @@
 /**
- * Estado de sessão neutro.
+ * Estado de sessão do usuário autenticado.
  *
- * A autenticação real pertencerá ao Spring Boot/Spring Security. Enquanto isso,
- * não existe identidade fictícia, permissão presumida nem sessão persistida no
- * navegador.
+ * A identidade vem do Spring Boot/Spring Security e é recuperada pela API.
+ * O cookie HttpOnly permanece no servidor de sessão; não há identidade fictícia,
+ * permissão presumida nem sessão persistida no armazenamento local do navegador.
  */
+
+import { autenticacaoApi } from '../services/api/index.js'
 
 const ouvintes = new Set()
 let sessao = null
 let initialized = false
+let restauracao = null
 
 function notificar() {
   for (const ouvinte of ouvintes) ouvinte(sessao)
@@ -48,4 +51,13 @@ export function sairSessao() {
 export function assinarSessao(ouvinte) {
   ouvintes.add(ouvinte)
   return () => ouvintes.delete(ouvinte)
+}
+
+/** Restaura a identidade a partir do cookie HttpOnly do Spring Boot. */
+export function restaurarSessao() {
+  if (restauracao) return restauracao
+  restauracao = autenticacaoApi.sessaoAtual()
+    .then((dados) => definirSessao(dados?.usuario ?? dados))
+    .catch(() => definirSessao(null))
+  return restauracao
 }

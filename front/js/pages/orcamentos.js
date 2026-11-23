@@ -356,7 +356,7 @@ class PaginaOrcamentos {
       ),
       h('p', { class: 'nota-conversao' },
         h('span', { class: 'ic-caixa', innerHTML: icone('Info', 'ic ic--14') }),
-        h('span', {}, 'Sem integração: prazo e dados oficiais da OS serão definidos pelo back-end.')
+        h('span', {}, 'O prazo e os dados oficiais da OS serão calculados e persistidos pelo back-end.')
       )
     )
   }

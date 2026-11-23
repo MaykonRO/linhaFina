@@ -248,7 +248,7 @@ class PaginaConfiguracoes {
       onSalvar: () => this.salvarSecao('taxaUrgenciaPadrao', r.taxaUrgenciaPadrao),
       children: campo({
         label: 'Percentual padrão',
-        dica: 'Regra oficial pendente de integração com o back-end.',
+        dica: 'Usada pela API no cálculo do valor final das OSs urgentes.',
         controle: h('div', { class: 'campo-com-sufixo' }, inputTaxa, h('span', { class: 'texto-faint' }, '%')),
       }).raiz,
     })
@@ -260,7 +260,7 @@ class PaginaConfiguracoes {
       icone: 'Heart',
       chave: 'fidelidade',
       titulo: 'Programa de fidelidade',
-      descricao: 'Regra exibida no atendimento, pendente de validação pelo back-end.',
+      descricao: 'Desconto aplicado pela API quando a cliente atinge a regra configurada.',
       sujo: this.sujo('fidelidade'),
       onSalvar: () => this.salvarSecao('fidelidade', r.fidelidade),
       children: (() => {
@@ -285,7 +285,7 @@ class PaginaConfiguracoes {
           area.replaceChildren(
             interruptor({
               rotulo: 'Programa ativo',
-              descricao: 'Sem integração: o desconto de fidelidade não é calculado automaticamente.',
+              descricao: 'Quando ativo, o desconto é calculado pelo back-end na criação da OS.',
               marcado: r.fidelidade.ativo,
               onMudar: (ativo) => {
                 r.fidelidade.ativo = ativo
@@ -301,7 +301,7 @@ class PaginaConfiguracoes {
               campo({ label: 'Serviços necessários', controle: inputServicos }).raiz
             ),
             campo({ label: 'Texto da regra', controle: inputRegra }).raiz,
-            badge({ variante: 'neutral', rotulo: 'Regra pendente de integração' })
+            badge({ variante: 'neutral', rotulo: r.fidelidade.ativo ? 'Regra ativa no cálculo das OSs' : 'Regra desativada' })
           )
         }
         fidelidadeRender()

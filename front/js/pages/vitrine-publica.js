@@ -13,7 +13,7 @@ import { marcaLinhaFina } from '../components/layout.js'
 import { h } from '../components/dom.js'
 import { icone } from '../components/icons.js'
 import { badge, botao, estadoVazio } from '../components/ui.js'
-import { artePeca } from '../components/arte.js'
+import { imagemPeca } from '../components/arte.js'
 import { contatoAtelie } from '../services/estatisticas.js'
 import { formatarMoeda, formatarTelefone, textoSeguro, compararTexto } from '../utils/format.js'
 
@@ -118,7 +118,7 @@ function renderizar() {
         filtradas.map((peca) =>
           h('li', {},
             h('article', { class: 'card-surface peca-card' },
-              artePeca(peca.arte),
+              imagemPeca(peca),
               h('div', { class: 'peca-card-corpo' },
                 h('div', { class: 'peca-card-topo' },
                   h('h3', { class: 'peca-nome' }, peca.nome),
@@ -132,7 +132,7 @@ function renderizar() {
           )
         )
       ),
-      h('p', { class: 'vitrine-nota' }, 'As imagens são ilustrações da peça e não representam trabalhos reais do ateliê.')
+      h('p', { class: 'vitrine-nota' }, 'Peças sem foto usam ilustrações autorais. Fotos enviadas pelo ateliê são identificadas como imagens reais.')
     )
   }
 

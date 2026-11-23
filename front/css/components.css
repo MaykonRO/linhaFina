@@ -1264,3 +1264,10 @@
   height: 100%;
   width: 100%;
 }
+
+.arte-imagem {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

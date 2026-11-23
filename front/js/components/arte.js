@@ -8,6 +8,7 @@
  */
 
 import { h } from './dom.js'
+import { obterConfigApi } from '../services/api/config.js'
 
 const FAINT = '#716C85'
 const INK = '#F2EFFA'
@@ -181,4 +182,15 @@ export function artePeca(arte = 'vestido-longo', classe = '') {
     class: `arte-peca${classe ? ` ${classe}` : ''}`,
     innerHTML: PECAS[arte] ?? PECAS['vestido-longo'],
   })
+}
+
+/** Usa a foto real quando existe; mantém a ilustração original como alternativa. */
+export function imagemPeca(peca) {
+  if (!peca?.imagemUrl) return artePeca(peca?.arte)
+  return h('div', { class: 'arte-peca' },
+    h('img', {
+      class: 'arte-imagem', src: `${obterConfigApi().baseUrl}${peca.imagemUrl}`,
+      alt: `Foto de ${peca.nome}`, loading: 'lazy',
+    })
+  )
 }

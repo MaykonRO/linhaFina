@@ -1,0 +1,19 @@
+{
+  "fluxos": [
+    {
+      "fluxo": "configuracoes.taxa-ui-persistiu",
+      "valor": 25
+    },
+    {
+      "fluxo": "configuracoes.taxa-restaurada",
+      "valor": 20
+    },
+    {
+      "fluxo": "configuracoes.folga-ui-persistiu",
+      "data": "2026-11-30"
+    },
+    "configuracoes.folga-de-teste-removida"
+  ],
+  "pageErrors": [],
+  "consoleInesperados": []
+}

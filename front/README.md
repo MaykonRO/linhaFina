@@ -4,10 +4,10 @@ Front-end do **Linha Fina**, sistema de gestão para ateliês de costura:
 ordens de serviço, clientes com ficha de medidas, catálogo de serviços, orçamentos,
 agenda de entregas e provas, equipe, vitrine pública e financeiro.
 
-Esta etapa contém **somente a interface**. Não há seed, dados fictícios, banco local,
-autenticação simulada ou persistência de negócio no navegador. As páginas carregam
-os registros pela futura API REST em Java + Spring Boot (com PostgreSQL) e apresentam
-estados honestos de carregamento, vazio, erro e integração pendente.
+A interface original está preservada e integrada ao núcleo da API REST em Java +
+Spring Boot + PostgreSQL. Não há seed, banco local, autenticação simulada ou
+persistência de negócio no navegador. As páginas apresentam estados honestos de
+carregamento, vazio, erro e integração pendente para módulos ainda não conectados.
 
 ## Como executar
 
@@ -47,7 +47,7 @@ as demais páginas estão em `pages/`.
 - **Gabarito** (Fontsource, arquivos locais em `assets/fonts/`) — tipografia com alma de modelagem
 - **Ícones Lucide** — SVGs inline gerados em `js/components/icons.js` (zero dependência em runtime)
 - **Gráficos SVG próprios** — `js/components/charts.js` (área, donut e barras com o tema)
-- Back-end futuro: **Java + Spring Boot (REST) + PostgreSQL** — explicitamente fora desta etapa
+- Back-end: **Java 21 + Spring Boot (REST) + PostgreSQL**, implementado em `../backend/`
 
 ## Estrutura
 
@@ -93,7 +93,7 @@ front/                      # raiz do front-end dentro do repositório
     └── favicon.svg
 ```
 
-## Camada de dados e a futura API
+## Camada de dados e a API Java
 
 - **Páginas → `js/app/store.js` → módulos de entidade → cliente HTTP → API REST.**
 - O store inicia com coleções vazias e expõe estados explícitos:
@@ -154,8 +154,9 @@ defina a configuração no HTML de execução ou em um script carregado antes de
 </script>
 ```
 
-As rotas também são configuráveis e **não estão fixadas neste projeto** porque o
-contrato do Spring Boot ainda não foi confirmado:
+As rotas reais administrativas estão em `js/config-api.js`; a vitrine pública usa
+apenas `js/config-api-publica.js`. O mecanismo continua
+configurável em runtime; exemplo:
 
 ```html
 <script>
@@ -172,21 +173,15 @@ Sem rota configurada, a operação não executa `fetch` e a interface informa qu
 integração está pendente. A lista completa de chaves lógicas está em
 `js/services/api/index.js`.
 
-## Recursos que aguardam o back-end real
+## Integração implementada e pendências
 
-- Autenticação, sessão, papéis e permissões.
-- CRUD autoritativo de clientes, serviços, OS, orçamentos, equipe, vitrine e
-  configurações.
-- Códigos sequenciais, IDs, transições de status, conversão de orçamento, cálculo
-  financeiro, pagamentos, cobrança e recorrência.
-- Prazos oficiais, prioridade de fila e notificações enviadas.
-- Exportação CSV/PDF e relatórios persistidos pelo servidor.
-- Horário de funcionamento oficial e dias de folga (o padrão do front-end
-  significa "não informado" e não fecha o ateliê por conta própria).
-- Fechamento real do ateliê na agenda e cálculo oficial do valor final da OS.
+Autenticação/sessão, CRUDs, orçamento→OS, cálculos, prazos, configurações,
+pagamentos, relatórios, upload e PDF da OS usam a API Java real. A página pública
+não consulta endpoints administrativos.
 
-A interface preserva formulários, validações e feedback de operação, mas sinaliza
-explicitamente quando a API ainda não está disponível.
+Continuam pendentes: exportação CSV, envio de e-mail/SMTP e tela para administrar
+múltiplos usuários. A interface preserva formulários, validações e feedback de
+operação e sinaliza quando uma funcionalidade ainda não está disponível.
 
 ## Auditoria funcional
 

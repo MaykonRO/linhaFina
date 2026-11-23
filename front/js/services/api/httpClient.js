@@ -1,5 +1,5 @@
 /**
- * Cliente HTTP central para a futura API REST do Spring Boot.
+ * Cliente HTTP central para a API REST do Spring Boot.
  *
  * Usa `fetch` nativo. As operações lógicas só fazem requisição depois que a
  * respective rota foi confirmada em `window.LF_API_ENDPOINTS`.
@@ -115,6 +115,41 @@ export async function requestUrl(caminho, { method = 'GET', body, params, signal
     })
   }
 
+  return lerResposta(resposta)
+}
+
+/** Envia multipart usando a mesma configuracao, sessao e tratamento de erro do cliente. */
+export async function uploadUrl(caminho, { arquivo, signal } = {}) {
+  const config = obterConfigApi()
+  const controlador = new AbortController()
+  const temporizador = setTimeout(() => controlador.abort(), config.timeoutMs)
+  const sinais = signal ? [controlador.signal, signal] : [controlador.signal]
+  const corpo = new FormData()
+  corpo.append('arquivo', arquivo)
+
+  let resposta
+  try {
+    resposta = await fetch(montarUrl(config.baseUrl, caminho), {
+      method: 'POST',
+      headers: { Accept: 'application/json', ...config.headers },
+      body: corpo,
+      credentials: config.credentials,
+      signal: sinais.length > 1 ? AbortSignal.any(sinais) : sinais[0],
+    })
+  } catch (erro) {
+    if (erro?.name === 'AbortError') {
+      throw new ErroApi('O envio da imagem demorou demais. Tente novamente.', { codigo: 'tempo-esgotado', causa: erro })
+    }
+    throw new ErroApi('Nao foi possivel enviar a imagem ao servidor.', { codigo: 'falha-de-rede', causa: erro })
+  } finally {
+    clearTimeout(temporizador)
+  }
+  if (!resposta.ok) {
+    throw new ErroApi(await mensagemDeErro(resposta), {
+      status: resposta.status,
+      codigo: resposta.status >= 500 ? 'erro-servidor' : 'erro-requisicao',
+    })
+  }
   return lerResposta(resposta)
 }
 

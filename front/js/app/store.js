@@ -161,6 +161,15 @@ async function executarOperacao(entidade, operacaoApi) {
   }
 }
 
+async function executarConsulta(entidade, consultaApi) {
+  try {
+    const data = await consultaApi()
+    return { ok: true, data, erro: null, entidade }
+  } catch (erro) {
+    return resultadoFalha(erro, entidade)
+  }
+}
+
 const acoes = {
   clientes: {
     criar: (dados) => executarOperacao('clientes', () => clientesApi.criar(dados)),
@@ -175,9 +184,11 @@ const acoes = {
   },
   ordens: {
     criar: (dados) => executarOperacao('ordens', () => ordensServicoApi.criar(dados)),
+    preverPrazo: (dados) => executarConsulta('ordens', () => ordensServicoApi.preverPrazo(dados)),
     atualizar: (id, dados) => executarOperacao('ordens', () => ordensServicoApi.atualizar(id, dados)),
     avancarStatus: (id) => executarOperacao('ordens', () => ordensServicoApi.avancarStatus(id)),
     cancelar: (id, motivo) => executarOperacao('ordens', () => ordensServicoApi.cancelar(id, motivo)),
+    registrarProva: (id, dados) => executarOperacao('ordens', () => ordensServicoApi.registrarProva(id, dados)),
     marcarPagamento: (id, dados) => executarOperacao('ordens', () => ordensServicoApi.registrarPagamento(id, dados)),
   },
   orcamentos: {
@@ -198,13 +209,14 @@ const acoes = {
     alternarExibicao: (id) => executarOperacao('vitrine', () => vitrineApi.alternarExibicao(id)),
     alternarDestaque: (id) => executarOperacao('vitrine', () => vitrineApi.alternarDestaque(id)),
     remover: (id) => executarOperacao('vitrine', () => vitrineApi.removerPeca(id)),
+    enviarImagem: (id, arquivo) => executarOperacao('vitrine', () => vitrineApi.enviarImagem(id, arquivo)),
   },
   configuracoes: {
     atualizar: (alteracoes) => executarOperacao('configuracoes', () => configuracoesApi.atualizar(alteracoes)),
   },
   autenticacao: {
     entrar: (credenciais) => executarOperacao('autenticacao', () => autenticacaoApi.entrar(credenciais)),
-    sair: () => executarOperacao('autenticacao', () => autenticacaoApi.sair()),
+    sair: () => executarConsulta('autenticacao', () => autenticacaoApi.sair()),
   },
 }
 

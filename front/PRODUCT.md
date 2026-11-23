@@ -6,7 +6,7 @@
 web
 
 ## Stack
-HTML5 + CSS3 + JavaScript ES6+ puro, módulos ES nativos, sem framework, bundler ou etapa de build. Ícones Lucide como SVG inline e gráficos SVG próprios. Back-end futuro: Java + Spring Boot (REST) + PostgreSQL, explicitamente fora desta etapa.
+HTML5 + CSS3 + JavaScript ES6+ puro, módulos ES nativos, sem framework, bundler ou etapa de build. Ícones Lucide como SVG inline e gráficos SVG próprios. Backend integrado: Java 21 + Spring Boot (REST) + PostgreSQL.
 
 ## Users
 Primário: a dona e a equipe de um pequeno ateliê de costura brasileiro (costureiras e atendimento), gerenciando ordens de serviço no dia a dia, em desktop e celular. Autenticação, sessão e papéis futuros serão definidos pelo back-end. Secundário: clientes finais do ateliê vendo a vitrine pública.
@@ -18,12 +18,12 @@ O Linha Fina gerencia o fluxo do ateliê: ordens de serviço (OS), clientes com 
 Fluxo construído sobre os rituais específicos de ateliê: prova intermediária, ficha de medidas, conversão orçamento→OS e acompanhamento de ordens. Ferramentas genéricas de gestão não carregam essas etapas.
 
 ## Operating Context
-Somente front-end. O estado nasce vazio e é carregado da API real. Não há seed, repositório simulado, autenticação fictícia ou persistência de negócio no navegador. A única preferência local é `linha-fina:sidebar-recolhida`. A interface fica em pt-BR.
+Full stack local. O estado nasce vazio e é carregado da API Java real com PostgreSQL. Não há seed, repositório simulado, autenticação fictícia ou persistência de negócio no navegador. A única preferência local é `linha-fina:sidebar-recolhida`; a autenticação usa sessão HttpOnly. A interface fica em pt-BR.
 
 ## Capabilities and Constraints
 - 14 áreas: dashboard, OS (listar/criar/editar/cancelar), clientes (+ medidas), serviços, orçamentos (aprovar/recusar/converter), agenda (dia/semana/mês), equipe, vitrine pública + administração, financeiro, relatórios, configurações e login.
-- Sem back-end nesta etapa: ações dependem da API e informam claramente quando a integração está pendente.
-- Sem pagamentos reais, cobrança, conversão efetiva, avanço de status ou geração de arquivos até a API responder.
+- Backend Java conectado; qualquer ponto ainda não integrado continua identificado explicitamente, sem sucesso simulado.
+- Sem cobrança externa ou integração bancária; baixas de pagamento, conversão, avanço e PDF são persistidos/gerados pela API real.
 - Dados coerentes entre páginas; todos os indicadores derivam dos mesmos registros reais.
 - A troca da camada de dados deve exigir alteração mínima nas páginas.
 

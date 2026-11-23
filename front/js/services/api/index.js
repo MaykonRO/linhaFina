@@ -7,7 +7,7 @@
  */
 
 import { endpointConfigurado } from './config.js'
-import { httpClient, requestUrl, IntegracaoNaoConfiguradaError } from './httpClient.js'
+import { httpClient, requestUrl, uploadUrl, IntegracaoNaoConfiguradaError } from './httpClient.js'
 
 function resolverRota(rota, pathParams = {}) {
   const caminho = endpointConfigurado(rota)
@@ -47,9 +47,11 @@ export const ordensServicoApi = {
   listar: (params, opcoes) => httpClient.get('ordens-servico.listar', params, opcoes),
   obter: (id, opcoes) => comId('ordens-servico.obter', id, opcoes),
   criar: (dados, opcoes) => httpClient.post('ordens-servico.criar', dados, opcoes),
+  preverPrazo: (dados, opcoes) => httpClient.post('ordens-servico.prever-prazo', dados, opcoes),
   atualizar: (id, dados, opcoes) => comIdEBody('ordens-servico.atualizar', id, 'PUT', dados, opcoes),
   avancarStatus: (id, opcoes) => comIdEBody('ordens-servico.avancar-status', id, 'POST', undefined, opcoes),
   cancelar: (id, motivo, opcoes) => comIdEBody('ordens-servico.cancelar', id, 'POST', { motivo }, opcoes),
+  registrarProva: (id, dados, opcoes) => comIdEBody('ordens-servico.prova', id, 'POST', dados, opcoes),
   registrarPagamento: (id, dados, opcoes) => comIdEBody('ordens-servico.pagamento', id, 'POST', dados, opcoes),
 }
 
@@ -77,6 +79,7 @@ export const vitrineApi = {
   alternarExibicao: (id, opcoes) => comIdEBody('vitrine.pecas.alternar-exibicao', id, 'POST', undefined, opcoes),
   alternarDestaque: (id, opcoes) => comIdEBody('vitrine.pecas.alternar-destaque', id, 'POST', undefined, opcoes),
   removerPeca: (id, opcoes) => comIdEBody('vitrine.pecas.remover', id, 'DELETE', undefined, opcoes),
+  enviarImagem: (id, arquivo, opcoes) => uploadUrl(resolverRota('vitrine.pecas.imagem', { id }), { arquivo, ...opcoes }),
 }
 
 export const pagamentosApi = {

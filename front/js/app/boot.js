@@ -7,8 +7,9 @@
  */
 
 import { iniciarStore, carregarDados, recarregarDados } from './store.js'
-import { iniciarSessao } from './sessao.js'
+import { iniciarSessao, restaurarSessao } from './sessao.js'
 import { montarLayout } from '../components/layout.js'
+import { navegar } from './rotas.js'
 
 /**
  * @param {string} pagina id da página atual (data-pagina)
@@ -19,7 +20,13 @@ export function iniciarApp(pagina) {
   iniciarSessao()
   montarLayout(pagina)
 
-  void carregarDados()
+  void restaurarSessao().then((sessao) => {
+    if (!sessao) {
+      navegar('login', null, { substituir: true })
+      return
+    }
+    void carregarDados()
+  })
 
   return { db: null }
 }

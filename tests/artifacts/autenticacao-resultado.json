@@ -1,0 +1,12 @@
+{
+  "fluxos": [
+    "rota-protegida-redirecionou-para-login",
+    "senha-invalida-retornou-401",
+    "login-valido-e-identidade-restaurada",
+    "sessao-preservada-entre-documentos-html",
+    "logout-http-204",
+    "rota-bloqueada-apos-logout"
+  ],
+  "pageErrors": [],
+  "consoleInesperados": []
+}

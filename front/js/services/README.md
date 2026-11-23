@@ -1,5 +1,9 @@
 # Camada de dados do Linha Fina
 
+O núcleo está conectado ao backend Java em `http://localhost:8080/api` por meio de
+`js/config-api.js`. Somente rotas implementadas são configuradas; módulos pendentes
+permanecem com o estado honesto de integração ausente.
+
 Páginas **não acessam armazenamento, seeds ou HTTP diretamente**. Use o store
 (`js/app/store.js`), as derivações puras de `services/estatisticas.js` e os
 módulos de entidade em `services/api/`.

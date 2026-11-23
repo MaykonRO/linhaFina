@@ -22,7 +22,7 @@ import {
   campo, criarInput, criarTextarea, checkbox, campoMoeda,
 } from '../components/ui.js'
 import { abrirModal } from '../components/modal.js'
-import { compararTexto, contemTexto, formatarMoeda, formatarTelefone, hojeISO } from '../utils/format.js'
+import { compararTexto, contemTexto, formatarData, formatarMoeda, formatarTelefone, hojeISO } from '../utils/format.js'
 import { STATUS_OS, STATUS_OS_LISTA } from '../utils/status.js'
 import { dataAntesDe, email as validarEmail, naoNegativo, positivo, telefone as validarTelefone, vazio, validarCampo } from '../utils/validation.js'
 
@@ -520,6 +520,11 @@ class ControladorFormularioOS {
     })
     inputPrevisao.addEventListener('input', () => this.setCampo('dataPrevistaEntrega', inputPrevisao.value))
     this.campos.dataPrevistaEntrega = campoPrevisao
+    this.previsaoDetalhe = h('p', { class: 'texto-faint-pequeno', role: 'status' })
+    const botaoPrevisao = botao({
+      variante: 'secundario', type: 'button', icone: 'CalendarDays',
+      children: ['Calcular previsão'], onClick: () => this.calcularPrevisao(),
+    })
 
     /* ---------------- 4. Execução ---------------- */
 
@@ -586,7 +591,7 @@ class ControladorFormularioOS {
         ),
         h('div', { class: 'grade-form' },
           h('div', { class: 'campo-largo' },
-            h('div', { class: 'combobox-caixa' }, inputCliente, listaClientes),
+            h('div', { class: 'combobox-caixa' }, campoCliente.raiz, listaClientes),
             infoCliente
           )
         )
@@ -628,7 +633,7 @@ class ControladorFormularioOS {
             h('p', { class: 'texto-faint-pequeno' }, 'Cálculo de apoio. O valor oficial da OS é confirmado pela API.')
           ),
           campoEntrada.raiz,
-          campoPrevisao.raiz
+          h('div', { class: 'pilha-2' }, campoPrevisao.raiz, botaoPrevisao, this.previsaoDetalhe)
         )
       ),
       /* 4. Execução */
@@ -775,6 +780,45 @@ class ControladorFormularioOS {
         )
       ),
     })
+  }
+
+  /* ------------------------------ Previsão oficial ------------------------------ */
+
+  async calcularPrevisao() {
+    const erros = this.calcularErros()
+    // A previsão é justamente a resposta desta consulta; a prova será validada novamente no envio.
+    erros.dataPrevistaEntrega = ''
+    erros.dataProva = ''
+    const validacao = validarCampo(erros)
+    if (!validacao.valido) {
+      this.erros = validacao.erros
+      this.tentouEnviar = true
+      for (const [nomeCampo, mensagem] of Object.entries(validacao.erros)) {
+        this.campos?.[nomeCampo]?.definirErro(mensagem)
+      }
+      toast.aviso('Preencha os dados da peça e do serviço antes de calcular a previsão.')
+      return
+    }
+
+    const resultado = await acoes.ordens.preverPrazo({ ...this.form, dataPrevistaEntrega: null })
+    if (!resultado.ok) {
+      toast.aviso(resultado.erro)
+      return
+    }
+    const previsao = resultado.data
+    this.form.dataPrevistaEntrega = previsao.dataPrevistaEntrega
+    this.campos.dataPrevistaEntrega.controle.value = previsao.dataPrevistaEntrega
+    this.campos.dataPrevistaEntrega.definirErro('')
+    this.previsaoDetalhe.textContent =
+      `${formatarData(previsao.dataPrevistaEntrega)} · ${previsao.horasFila}h na fila + ${previsao.horasServico}h do serviço · ${previsao.diasUteis} dia(s) úteis.`
+    const impactos = previsao.impactosPrazo ?? []
+    if (impactos.length) {
+      const descricao = impactos.map((item) => `${item.codigo}: ${formatarData(item.prazoAnterior)} → ${formatarData(item.novoPrazo)}`).join('; ')
+      this.previsaoDetalhe.textContent += ` Impactos: ${descricao}.`
+      toast.aviso(`${impactos.length} OS(s) terão a previsão alterada se este pedido urgente for salvo.`)
+    } else {
+      toast.sucesso('Previsão calculada pela fila real do ateliê.')
+    }
   }
 
   /* ------------------------------ Envio ------------------------------ */
