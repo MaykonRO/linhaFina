@@ -222,7 +222,7 @@ Projeto desenvolvido em dupla.
  
 A interface completa está em **[`front/`](front/)** — HTML5 + CSS3 + JavaScript puro (módulos ES nativos), sem framework, sem bundler e sem etapa de build. A pasta `front/` substitui a estrutura *sugerida* acima: na implementação, o CSS é próprio (design system em `front/css/`) em vez de Tailwind, e a camada de dados ficou em `front/js/app/store.js` + `front/js/services/api/`.
 
-**Estado atual:** a interface está pronta e navegável, mas **sem back-end conectado**. Não há seed, dados fictícios, autenticação simulada nem persistência de negócio no navegador. As páginas carregam os registros pela futura API REST (Spring Boot + PostgreSQL) e apresentam estados honestos de carregamento, vazio, erro e "integração pendente". Nenhuma ação finge sucesso antes de uma resposta real da API.
+**Estado atual:** a interface original está preservada e integrada ao backend Java com PostgreSQL real. Além do núcleo, foram implementados autenticação, orçamentos, vitrine/upload, prazos, provas, configurações, pagamentos, relatórios, PDF, fidelidade, taxa de guarda e bloqueio por pendências. Não há seed, autenticação simulada nem persistência de negócio no navegador. Os pontos ainda pendentes estão identificados no relatório final.
 
 ### Como rodar o front-end
 
@@ -250,4 +250,18 @@ Sem back-end, o site abre normalmente e mostra o aviso de integração pendente.
 ```
 
 A lista completa de chaves, estados e regras de integração está em **[`front/README.md`](front/README.md)** e em **[`front/js/services/README.md`](front/js/services/README.md)**.
+
+## Backend Java implementado
+
+O backend fica em [`backend/`](backend/) e utiliza Java 21, Spring Boot 3.5.7, Spring Data JPA/Hibernate, Bean Validation, Maven e PostgreSQL 17.6. A herança `Pessoa → Cliente/Funcionaria` usa estratégia `JOINED` e é exercitada nos CRUDs.
+
+- API: `http://localhost:8080/api`.
+- Frontend: `http://localhost:5180`.
+- Inicialização no Windows: execute [`INICIAR.ps1`](INICIAR.ps1).
+- Testes Java: execute [`TESTAR.ps1`](TESTAR.ps1) ou `mvn test` em `backend/`.
+- Credenciais: copie `backend/.env.example` para `backend/.env`; o arquivo real é ignorado pelo Git.
+- Documentação de estudo: [`DOCUMENTACAO_JAVA.md`](DOCUMENTACAO_JAVA.md).
+- Resultados por fase: [`ACOMPANHAMENTO.md`](ACOMPANHAMENTO.md).
+
+Os testes de integração utilizam o banco separado `linhafina_test`, nunca H2. O teste E2E `tests/e2e/nucleo.cjs` percorre os formulários reais e limpa apenas os registros que criou.
 

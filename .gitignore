@@ -5,6 +5,22 @@ dist
 # Ambiente / segredos
 .env
 *.local
+backend/src/main/resources/application-local.properties
+
+# Ferramentas e referências locais (não versionar binários nem clones)
+.tools/
+.referencias/
+
+# Execução local do backend
+backend/data/
+backend/uploads/
+target/
+*.log
+
+# Evidências temporárias de navegador (o resultado JSON permanece versionável)
+tests/artifacts/*.html
+tests/artifacts/*.png
+tests/artifacts/e2e-falha.txt
 
 # Sistema
 .DS_Store
