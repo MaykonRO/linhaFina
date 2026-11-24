@@ -23,7 +23,7 @@ services:
           name: linha-fina-db
           property: password
       - key: APP_ADMIN_EMAIL
-        value: admin@linhafina.local
+        value: linha-fina@gmail.com
       - key: APP_ADMIN_PASSWORD
         generateValue: true
       - key: APP_ADMIN_NAME

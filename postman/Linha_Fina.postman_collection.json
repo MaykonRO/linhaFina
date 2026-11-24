@@ -157,7 +157,7 @@
   ],
   "variable": [
     {"key": "baseUrl", "value": "http://localhost:8080/api"},
-    {"key": "admin_email", "value": "admin@linhafina.local"},
+    {"key": "admin_email", "value": "linha-fina@gmail.com"},
     {"key": "senha_admin", "value": ""},
     {"key": "cliente_id", "value": ""},
     {"key": "servico_id", "value": ""},

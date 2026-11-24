@@ -278,7 +278,7 @@ CREATE DATABASE linhafina_test OWNER linhafina;
 DB_URL=jdbc:postgresql://localhost:5432/linhafina
 DB_USERNAME=linhafina
 DB_PASSWORD=troque-por-uma-senha-local
-APP_ADMIN_EMAIL=admin@linhafina.local
+APP_ADMIN_EMAIL=linha-fina@gmail.com
 APP_ADMIN_PASSWORD=troque-por-outra-senha-local
 APP_ADMIN_NAME=Administracao Local
 ```

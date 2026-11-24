@@ -255,7 +255,7 @@ Durante o trabalho, falhas foram reproduzidas e corrigidas: montagem do rótulo 
 - API: `http://localhost:8080/api`.
 - O script inicia o PostgreSQL somente se a porta estiver livre e evita duplicar servidores.
 
-A conta inicial deste ambiente usa `admin@linhafina.local`. A senha aleatória está somente em `backend/.env`, que não é versionado. Para outro ambiente, defina suas próprias variáveis a partir de `backend/.env.example`.
+A conta administrativa deste ambiente usa `linha-fina@gmail.com`. A senha aleatória está somente em `backend/.env`, que não é versionado. Para outro ambiente, defina suas próprias variáveis a partir de `backend/.env.example`.
 
 ### Manual
 
