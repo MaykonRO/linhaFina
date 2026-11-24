@@ -26,7 +26,7 @@ O `Dockerfile` usa Maven com Java 21 para compilar o backend e uma imagem JRE se
 - `APP_ADMIN_PASSWORD` é gerado automaticamente pelo Render. Consulte-o somente no painel **Environment** da API, sem compartilhá-lo publicamente.
 - O e-mail inicial é `admin@linhafina.local`.
 - `APP_CORS_ORIGINS` libera o frontend HTTPS do Render.
-- `COOKIE_SECURE=true` exige HTTPS para o cookie de sessão.
+- `COOKIE_SECURE=true` exige HTTPS para o cookie de sessão e `SERVER_SERVLET_SESSION_COOKIE_SAME_SITE=None` permite o login entre os domínios do frontend e da API, sempre com `Secure`.
 - Nenhuma senha real está no repositório.
 
 ## Validação após o deploy
