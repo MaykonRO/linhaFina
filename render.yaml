@@ -13,11 +13,15 @@ services:
     healthCheckPath: /api/configuracoes
     envVars:
       - key: DB_URL
-        value: jdbc:postgresql://${linha-fina-db.host}:${linha-fina-db.port}/linhafina
+        value: jdbc:postgresql://dpg-dc2c2vifngtc73bepv7g-a:5432/linhafina
       - key: DB_USERNAME
-        value: ${linha-fina-db.user}
+        fromDatabase:
+          name: linha-fina-db
+          property: user
       - key: DB_PASSWORD
-        value: ${linha-fina-db.password}
+        fromDatabase:
+          name: linha-fina-db
+          property: password
       - key: APP_ADMIN_EMAIL
         value: admin@linhafina.local
       - key: APP_ADMIN_PASSWORD

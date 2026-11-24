@@ -22,7 +22,7 @@ O `Dockerfile` usa Maven com Java 21 para compilar o backend e uma imagem JRE se
 
 ## Segredos e configuração
 
-- `DB_URL`, `DB_USERNAME` e `DB_PASSWORD` são derivados do banco gerenciado pelo Blueprint.
+- `DB_URL` usa o hostname interno do PostgreSQL do Blueprint; `DB_USERNAME` e `DB_PASSWORD` são lidos via `fromDatabase`.
 - `APP_ADMIN_PASSWORD` é gerado automaticamente pelo Render. Consulte-o somente no painel **Environment** da API, sem compartilhá-lo publicamente.
 - O e-mail inicial é `admin@linhafina.local`.
 - `APP_CORS_ORIGINS` libera o frontend HTTPS do Render.
