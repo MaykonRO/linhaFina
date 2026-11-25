@@ -54,6 +54,7 @@ class MvpIntegrationTest {
     @Test
     void deveEntrarRestaurarSessaoESair() throws Exception {
         mvc.perform(get("/api/saude")).andExpect(status().isOk());
+        mvc.perform(get("/api/configuracoes")).andExpect(status().isOk());
         mvc.perform(get("/api/clientes")).andExpect(status().isUnauthorized());
         mvc.perform(post("/api/autenticacao/entrar")
                         .contentType(MediaType.APPLICATION_JSON)

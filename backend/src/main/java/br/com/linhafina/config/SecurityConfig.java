@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .securityContext(context -> context.securityContextRepository(repository))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/saude", "/api/autenticacao/entrar", "/api/autenticacao/sessao").permitAll()
+                        .requestMatchers("/api/saude", "/api/configuracoes", "/api/autenticacao/entrar", "/api/autenticacao/sessao").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/api/clientes/**").hasAnyRole("DONO", "ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(errors -> errors
