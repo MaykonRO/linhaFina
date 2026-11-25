@@ -7,6 +7,7 @@ import br.com.linhafina.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,11 +37,16 @@ public class AutenticacaoService {
     @Transactional(readOnly = true)
     public UsuarioResponse entrar(LoginRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         Usuario usuario = autenticar(request.getEmail(), request.getSenha());
-        var autoridades = List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getPapel().name()));
-        var autenticacao = new UsernamePasswordAuthenticationToken(usuario.getEmail(), null, autoridades);
+
+        List<SimpleGrantedAuthority> autoridades = new ArrayList<>();
+        autoridades.add(new SimpleGrantedAuthority("ROLE_" + usuario.getPapel().name()));
+
+        UsernamePasswordAuthenticationToken autenticacao =
+                new UsernamePasswordAuthenticationToken(usuario.getEmail(), null, autoridades);
         SecurityContext contexto = SecurityContextHolder.createEmptyContext();
         contexto.setAuthentication(autenticacao);
         SecurityContextHolder.setContext(contexto);
+
         httpRequest.getSession(true);
         contextRepository.saveContext(contexto, httpRequest, httpResponse);
         return new UsuarioResponse(usuario);
@@ -49,25 +55,36 @@ public class AutenticacaoService {
     @Transactional(readOnly = true)
     public UsuarioResponse sessaoAtual() {
         Authentication autenticacao = SecurityContextHolder.getContext().getAuthentication();
-        if (autenticacao == null || !autenticacao.isAuthenticated() || "anonymousUser".equals(autenticacao.getPrincipal())) {
+        if (autenticacao == null || !autenticacao.isAuthenticated()
+                || "anonymousUser".equals(autenticacao.getPrincipal())) {
             throw new BadCredentialsException("Sessao nao autenticada.");
         }
-        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(autenticacao.getName())
-                .filter(Usuario::getAtivo)
-                .orElseThrow(() -> new BadCredentialsException("Sessao nao autenticada."));
+
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(autenticacao.getName());
+        if (usuario == null || !usuario.getAtivo()) {
+            throw new BadCredentialsException("Sessao nao autenticada.");
+        }
         return new UsuarioResponse(usuario);
     }
 
     public void sair(HttpServletRequest request) {
         HttpSession sessao = request.getSession(false);
-        if (sessao != null) sessao.invalidate();
+        if (sessao != null) {
+            sessao.invalidate();
+        }
         SecurityContextHolder.clearContext();
     }
 
     private Usuario autenticar(String email, String senha) {
-        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email == null ? "" : email.trim())
-                .filter(Usuario::getAtivo)
-                .orElseThrow(() -> new BadCredentialsException("E-mail ou senha invalidos."));
+        String emailParaBuscar = "";
+        if (email != null) {
+            emailParaBuscar = email.trim();
+        }
+
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(emailParaBuscar);
+        if (usuario == null || !usuario.getAtivo()) {
+            throw new BadCredentialsException("E-mail ou senha invalidos.");
+        }
         if (!passwordEncoder.matches(senha, usuario.getSenhaHash())) {
             throw new BadCredentialsException("E-mail ou senha invalidos.");
         }

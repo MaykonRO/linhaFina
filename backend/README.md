@@ -8,7 +8,7 @@ API REST acadêmica com Java 21, Spring Boot, Spring Data JPA, Spring Security e
 - `ClienteController` e `ClienteService`: CRUD de clientes.
 - `OrdemServicoController` e `OrdemServicoService`: CRUD de ordens de serviço.
 
-Entidades de negócio: `Usuario`, `Cliente` e `OrdemServico`. `Papel` e `StatusOrdem` são enums de apoio, não tabelas.
+Entidades de negócio: `Usuario`, `Cliente` e `OrdemServico`. `Pessoa` é uma classe abstrata herdada por `Usuario` e `Cliente` com `@MappedSuperclass`, sem tabela extra. `Papel` e `StatusOrdem` são enums de apoio.
 
 ## Pacotes
 

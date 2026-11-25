@@ -50,6 +50,7 @@ linha fina/
 │       └── test/          # Testes do MVP
 ├── tests/e2e/             # Fluxos do navegador
 ├── docs/                  # Documentação e esquema PostgreSQL
+├── CONCEITOS_JAVA.md
 ├── DOCUMENTACAO_JAVA.md
 ├── RELATORIO_FINAL.md
 ├── INICIAR.ps1
@@ -131,6 +132,7 @@ Os testes Java usam `linhafina_test`, separado do desenvolvimento. O E2E cria e 
 
 ## Documentação
 
+- `CONCEITOS_JAVA.md`: herança, abstração, polimorfismo e sobrescrita com exemplos.
 - `DOCUMENTACAO_JAVA.md`: explicação das classes e conceitos de POO.
 - `RELATORIO_FINAL.md`: estrutura final, remoções e testes.
 - `docs/schema-postgresql.sql`: esquema do banco.

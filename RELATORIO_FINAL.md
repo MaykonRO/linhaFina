@@ -21,7 +21,7 @@ Orçamentos, pagamentos, financeiro avançado, dashboard com indicadores avança
 
 ## 2. Estrutura final do backend
 
-A produção passou de 89 para 28 arquivos Java, mantendo:
+A produção passou de 89 para 29 arquivos Java, mantendo:
 
 ```text
 LinhaFinaApplication
@@ -43,6 +43,7 @@ repository/
   ClienteRepository
   OrdemServicoRepository
 model/
+  Pessoa
   Usuario
   Cliente
   OrdemServico
@@ -127,11 +128,11 @@ mvn -B -ntp clean test
 Resultado:
 
 ```text
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
-Os testes cobrem login/sessão/logout, CRUD de cliente, bloqueio de exclusão com OS, CRUD de OS e validações de cliente e OS, usando `linhafina_test`.
+Os testes cobrem login/sessão/logout, CRUD de cliente, bloqueio de exclusão com OS, CRUD de OS, validações e os conceitos de herança, abstração, polimorfismo e sobrescrita com `Pessoa`, usando `linhafina_test` quando necessário.
 
 ### Frontend/E2E
 

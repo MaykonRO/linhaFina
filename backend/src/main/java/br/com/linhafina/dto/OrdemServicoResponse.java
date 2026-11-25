@@ -15,25 +15,51 @@ public class OrdemServicoResponse {
     private String status;
     private String criadoEm;
 
-    public OrdemServicoResponse(OrdemServico os) {
-        this.id = String.valueOf(os.getId());
-        this.codigo = os.getCodigo();
-        this.clienteId = String.valueOf(os.getCliente().getId());
-        this.descricaoServico = os.getDescricaoServico();
-        this.valor = os.getValor();
-        this.dataEntrada = os.getDataEntrada() == null ? null : os.getDataEntrada().toString();
-        this.dataPrevistaEntrega = os.getDataPrevistaEntrega() == null ? null : os.getDataPrevistaEntrega().toString();
-        this.status = os.getStatus().paraApi();
-        this.criadoEm = os.getCriadoEm() == null ? null : os.getCriadoEm().toString();
+    public OrdemServicoResponse(OrdemServico ordem) {
+        this.id = String.valueOf(ordem.getId());
+        this.codigo = ordem.getCodigo();
+        this.clienteId = String.valueOf(ordem.getCliente().getId());
+        this.descricaoServico = ordem.getDescricaoServico();
+        this.valor = ordem.getValor();
+        this.dataEntrada = ordem.getDataEntrada() == null ? null : ordem.getDataEntrada().toString();
+        this.dataPrevistaEntrega = ordem.getDataPrevistaEntrega() == null ? null : ordem.getDataPrevistaEntrega().toString();
+        this.status = ordem.getStatus().paraApi();
+        this.criadoEm = ordem.getCriadoEm() == null ? null : ordem.getCriadoEm().toString();
     }
 
-    public String getId() { return id; }
-    public String getCodigo() { return codigo; }
-    public String getClienteId() { return clienteId; }
-    public String getDescricaoServico() { return descricaoServico; }
-    public BigDecimal getValor() { return valor; }
-    public String getDataEntrada() { return dataEntrada; }
-    public String getDataPrevistaEntrega() { return dataPrevistaEntrega; }
-    public String getStatus() { return status; }
-    public String getCriadoEm() { return criadoEm; }
+    public String getId() {
+        return id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public String getClienteId() {
+        return clienteId;
+    }
+
+    public String getDescricaoServico() {
+        return descricaoServico;
+    }
+
+    public BigDecimal getValor() {
+        return valor;
+    }
+
+    public String getDataEntrada() {
+        return dataEntrada;
+    }
+
+    public String getDataPrevistaEntrega() {
+        return dataPrevistaEntrega;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getCriadoEm() {
+        return criadoEm;
+    }
 }

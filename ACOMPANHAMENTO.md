@@ -17,7 +17,7 @@ O sistema está reduzido aos módulos Login, Clientes e Ordens de Serviço.
 
 ## Resultados verificados
 
-- 6 testes Java, 0 falhas.
+- 7 testes Java, 0 falhas, incluindo herança, abstração, polimorfismo e sobrescrita.
 - Login, sessão e logout funcionando.
 - CRUD de clientes e OS validado no Edge.
 - Responsividade em 390 px e 1440 px.

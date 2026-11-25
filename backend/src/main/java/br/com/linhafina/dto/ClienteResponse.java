@@ -18,9 +18,23 @@ public class ClienteResponse {
         this.criadoEm = cliente.getCriadoEm() == null ? null : cliente.getCriadoEm().toString();
     }
 
-    public String getId() { return id; }
-    public String getNome() { return nome; }
-    public String getTelefone() { return telefone; }
-    public String getEmail() { return email; }
-    public String getCriadoEm() { return criadoEm; }
+    public String getId() {
+        return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getCriadoEm() {
+        return criadoEm;
+    }
 }

@@ -65,19 +65,63 @@ public class OrdemServico {
         }
     }
 
-    public Long getId() { return id; }
-    public String getCodigo() { return codigo; }
-    public Cliente getCliente() { return cliente; }
-    public void setCliente(Cliente cliente) { this.cliente = cliente; }
-    public String getDescricaoServico() { return descricaoServico; }
-    public void setDescricaoServico(String descricaoServico) { this.descricaoServico = descricaoServico; }
-    public BigDecimal getValor() { return valor; }
-    public void setValor(BigDecimal valor) { this.valor = valor; }
-    public LocalDate getDataEntrada() { return dataEntrada; }
-    public void setDataEntrada(LocalDate dataEntrada) { this.dataEntrada = dataEntrada; }
-    public LocalDate getDataPrevistaEntrega() { return dataPrevistaEntrega; }
-    public void setDataPrevistaEntrega(LocalDate dataPrevistaEntrega) { this.dataPrevistaEntrega = dataPrevistaEntrega; }
-    public StatusOrdem getStatus() { return status; }
-    public void setStatus(StatusOrdem status) { this.status = status; }
-    public LocalDateTime getCriadoEm() { return criadoEm; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public String getDescricaoServico() {
+        return descricaoServico;
+    }
+
+    public void setDescricaoServico(String descricaoServico) {
+        this.descricaoServico = descricaoServico;
+    }
+
+    public BigDecimal getValor() {
+        return valor;
+    }
+
+    public void setValor(BigDecimal valor) {
+        this.valor = valor;
+    }
+
+    public LocalDate getDataEntrada() {
+        return dataEntrada;
+    }
+
+    public void setDataEntrada(LocalDate dataEntrada) {
+        this.dataEntrada = dataEntrada;
+    }
+
+    public LocalDate getDataPrevistaEntrega() {
+        return dataPrevistaEntrega;
+    }
+
+    public void setDataPrevistaEntrega(LocalDate dataPrevistaEntrega) {
+        this.dataPrevistaEntrega = dataPrevistaEntrega;
+    }
+
+    public StatusOrdem getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusOrdem status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCriadoEm() {
+        return criadoEm;
+    }
 }

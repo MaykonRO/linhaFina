@@ -2,6 +2,8 @@
 
 Este projeto demonstra uma aplicação simples de Programação Orientada a Objetos com Java, Spring Boot e PostgreSQL.
 
+O detalhamento de herança, abstração, polimorfismo e sobrescrita está em [CONCEITOS_JAVA.md](CONCEITOS_JAVA.md).
+
 ## Fluxo de uma operação
 
 ```text
@@ -45,93 +47,68 @@ public void setNome(String nome) {
 }
 ```
 
-As validações ficam nos DTOs e Services; as associações e dados das entidades ficam nas classes de modelo.
+## Herança e abstração
 
-## Construtores e `this`
-
-Construtores inicializam objetos. O JPA exige um construtor vazio para criar entidades durante as consultas. Outros construtores podem receber dados do domínio.
+`Pessoa` é uma classe abstrata com `id`, `nome` e `email`. `Cliente` e `Usuario` herdam esses campos e implementam o método abstrato `getTipoPessoa()`.
 
 ```java
-public Cliente(String nome, String telefone, String email) {
-    this.nome = nome;
-    this.telefone = telefone;
-    this.email = email;
+public abstract class Pessoa {
+    public abstract String getTipoPessoa();
+}
+
+public class Cliente extends Pessoa {
+    @Override
+    public String getTipoPessoa() {
+        return "cliente";
+    }
 }
 ```
 
-`this.nome` é o atributo do objeto; `nome`, sem `this`, é o parâmetro.
+`@MappedSuperclass` copia os campos da classe base para as tabelas das filhas. O banco continua com `usuarios`, `clientes` e `ordens_servico`, sem tabela `pessoas`.
+
+## Polimorfismo e sobrescrita
+
+Uma referência `Pessoa` pode apontar para `Cliente` ou `Usuario`. O método executado é o da classe real do objeto.
+
+```java
+Pessoa pessoa = new Cliente("Maria", "11999999999", "maria@teste.local");
+System.out.println(pessoa.getTipoPessoa()); // cliente
+```
+
+`PessoaTest` comprova esse comportamento e a sobrescrita de `getTipoPessoa()`.
 
 ## Entidades do MVP
 
 ### `Usuario`
 
-| Atributo | Tipo | Uso |
-|---|---|---|
-| `id` | `Long` | Chave primária |
-| `nome` | `String` | Nome do usuário |
-| `email` | `String` | Login único |
-| `senhaHash` | `String` | Hash BCrypt, nunca a senha original |
-| `papel` | `Papel` | Permissões |
-| `ativo` | `Boolean` | Permite ou bloqueia o login |
+Herda `id`, `nome` e `email` de `Pessoa` e acrescenta `senhaHash`, `papel` e `ativo`.
 
 ### `Cliente`
 
-| Atributo | Tipo | Uso |
-|---|---|---|
-| `id` | `Long` | Chave primária |
-| `nome` | `String` | Nome da cliente |
-| `telefone` | `String` | Contato |
-| `email` | `String` | Contato eletrônico |
-| `criadoEm` | `LocalDateTime` | Data de cadastro |
+Herda `id`, `nome` e `email` de `Pessoa` e acrescenta `telefone` e `criadoEm`.
 
 ### `OrdemServico`
 
-| Atributo | Tipo | Uso |
-|---|---|---|
-| `id` | `Long` | Chave primária |
-| `codigo` | `String` | Código sequencial da OS |
-| `cliente` | `Cliente` | Cliente proprietária da OS |
-| `descricaoServico` | `String` | Descrição do trabalho |
-| `valor` | `BigDecimal` | Valor do serviço |
-| `dataEntrada` | `LocalDate` | Data de entrada |
-| `dataPrevistaEntrega` | `LocalDate` | Previsão de entrega |
-| `status` | `StatusOrdem` | Estado atual |
-| `criadoEm` | `LocalDateTime` | Data de criação |
+Possui `id`, `codigo`, `cliente`, `descricaoServico`, `valor`, `dataEntrada`, `dataPrevistaEntrega`, `status` e `criadoEm`.
 
 ## Associação entre objetos
 
 `OrdemServico` possui uma referência a `Cliente`. No banco, isso se torna a coluna `cliente_id`, uma chave estrangeira obrigatória. O Service só cria uma OS se a cliente existir, e a exclusão da cliente é bloqueada quando há OS vinculada.
 
-## Enums
+## Enums e loops simples
 
-`StatusOrdem` representa `PENDENTE`, `EM_ANDAMENTO`, `CONCLUIDA` e `CANCELADA`. `Papel` representa os níveis de acesso. Enums evitam strings livres inválidas e centralizam o vocabulário.
+`StatusOrdem` representa `PENDENTE`, `EM_ANDAMENTO`, `CONCLUIDA` e `CANCELADA`. A conversão usa um `for` simples e `equalsIgnoreCase`.
 
-## Controllers
+Os Services convertem entidades em DTOs com `ArrayList` e `for`, sem streams ou lambdas desnecessários.
 
-- `AutenticacaoController`: login, sessão e logout.
-- `ClienteController`: CRUD de clientes.
-- `OrdemServicoController`: CRUD de OS.
+## Controllers e Services
 
-O Controller recebe a requisição HTTP e devolve o DTO, sem concentrar regras de negócio.
-
-## Services
-
-- `AutenticacaoService`: valida credenciais, cria e encerra a sessão.
-- `ClienteService`: valida cliente e impede exclusão com OS vinculada.
-- `OrdemServicoService`: valida cliente, valor e datas antes de salvar.
+- `AutenticacaoController` e `AutenticacaoService`: login, sessão e logout.
+- `ClienteController` e `ClienteService`: CRUD de clientes.
+- `OrdemServicoController` e `OrdemServicoService`: CRUD de OS.
+- `SaudeController`: health check da infraestrutura.
 
 `@Transactional` garante que a operação e seus relacionamentos sejam confirmados juntos.
-
-## Repositories e JPA
-
-```java
-public interface ClienteRepository extends JpaRepository<Cliente, Long> {
-}
-```
-
-O Spring cria a implementação. `JpaRepository<Cliente, Long>` usa generics para indicar o tipo da entidade e da chave.
-
-JPA mapeia objetos para tabelas com `@Entity`, `@Id`, `@Column`, `@ManyToOne` e `@JoinColumn`. Hibernate executa o SQL real no PostgreSQL.
 
 ## DTOs e validação
 
@@ -140,7 +117,7 @@ JPA mapeia objetos para tabelas com `@Entity`, `@Id`, `@Column`, `@ManyToOne` e 
 - `OrdemServicoRequest`: cliente, descrição, valor, datas e status.
 - `OrdemServicoResponse`: dados completos da OS.
 
-IDs são strings para compatibilidade com os deep-links do frontend. Valores usam `BigDecimal`, evitando erros comuns de arredondamento de `double` em dinheiro.
+IDs são strings para compatibilidade com o frontend. Valores usam `BigDecimal`, evitando erros comuns de arredondamento de `double` em dinheiro.
 
 ## Segurança
 
@@ -148,13 +125,17 @@ O login usa `BCryptPasswordEncoder.matches`. A senha persistida é apenas o hash
 
 ## Testes
 
-Os testes usam PostgreSQL real em `linhafina_test`, sem H2, cobrindo autenticação, CRUD de clientes, CRUD de OS e validações. O E2E percorre os formulários no Edge e remove seus registros ao final.
+- `MvpIntegrationTest`: autenticação, CRUD de clientes, CRUD de OS, relacionamento e validações.
+- `PessoaTest`: herança, abstração, polimorfismo e sobrescrita.
+
+Resultado atual: **7 testes, 0 falhas**. O E2E percorre os formulários no Edge e remove seus registros ao final.
 
 ## Como apresentar
 
-1. Mostre `Usuario`, `Cliente` e `OrdemServico` como classes com atributos privados.
-2. Explique construtores, getters, setters e encapsulamento.
-3. Mostre a associação `OrdemServico → Cliente` e sua chave estrangeira.
-4. Siga uma requisição do formulário ao PostgreSQL.
-5. Explique `StatusOrdem`, DTOs e validações.
-6. Execute os testes e mostre uma OS sendo criada, editada e excluída.
+1. Mostre `Pessoa` como classe abstrata.
+2. Mostre `Cliente` e `Usuario` herdando os campos comuns.
+3. Aponte `getTipoPessoa()` com `@Override`.
+4. Explique o polimorfismo com uma referência `Pessoa`.
+5. Mostre `OrdemServico` associada a `Cliente`.
+6. Mostre loops e condições simples nos Services.
+7. Execute os testes e faça uma operação CRUD no frontend.

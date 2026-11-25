@@ -26,16 +26,51 @@ public class OrdemServicoRequest {
 
     private String status;
 
-    public String getClienteId() { return clienteId; }
-    public void setClienteId(String clienteId) { this.clienteId = clienteId; }
-    public String getDescricaoServico() { return descricaoServico; }
-    public void setDescricaoServico(String descricaoServico) { this.descricaoServico = descricaoServico; }
-    public BigDecimal getValor() { return valor; }
-    public void setValor(BigDecimal valor) { this.valor = valor; }
-    public LocalDate getDataEntrada() { return dataEntrada; }
-    public void setDataEntrada(LocalDate dataEntrada) { this.dataEntrada = dataEntrada; }
-    public LocalDate getDataPrevistaEntrega() { return dataPrevistaEntrega; }
-    public void setDataPrevistaEntrega(LocalDate dataPrevistaEntrega) { this.dataPrevistaEntrega = dataPrevistaEntrega; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getClienteId() {
+        return clienteId;
+    }
+
+    public void setClienteId(String clienteId) {
+        this.clienteId = clienteId;
+    }
+
+    public String getDescricaoServico() {
+        return descricaoServico;
+    }
+
+    public void setDescricaoServico(String descricaoServico) {
+        this.descricaoServico = descricaoServico;
+    }
+
+    public BigDecimal getValor() {
+        return valor;
+    }
+
+    public void setValor(BigDecimal valor) {
+        this.valor = valor;
+    }
+
+    public LocalDate getDataEntrada() {
+        return dataEntrada;
+    }
+
+    public void setDataEntrada(LocalDate dataEntrada) {
+        this.dataEntrada = dataEntrada;
+    }
+
+    public LocalDate getDataPrevistaEntrega() {
+        return dataPrevistaEntrega;
+    }
+
+    public void setDataPrevistaEntrega(LocalDate dataPrevistaEntrega) {
+        this.dataPrevistaEntrega = dataPrevistaEntrega;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

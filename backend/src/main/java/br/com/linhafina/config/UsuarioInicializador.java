@@ -35,7 +35,9 @@ public class UsuarioInicializador implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        if (repository.count() > 0 || email.isBlank() || senha.isBlank()) return;
+        if (repository.count() > 0 || email.isBlank() || senha.isBlank()) {
+            return;
+        }
         Usuario admin = new Usuario(nome, email.trim(), encoder.encode(senha), Papel.DONO);
         repository.save(admin);
     }

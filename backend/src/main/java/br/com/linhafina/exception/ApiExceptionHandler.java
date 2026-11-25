@@ -39,7 +39,10 @@ public class ApiExceptionHandler {
         for (FieldError campo : erro.getBindingResult().getFieldErrors()) {
             campos.putIfAbsent(campo.getField(), campo.getDefaultMessage());
         }
-        String mensagem = campos.values().stream().findFirst().orElse("Revise os dados informados.");
+        String mensagem = "Revise os dados informados.";
+        if (!campos.isEmpty()) {
+            mensagem = campos.values().iterator().next();
+        }
         return resposta(HttpStatus.BAD_REQUEST, mensagem, request, campos);
     }
 

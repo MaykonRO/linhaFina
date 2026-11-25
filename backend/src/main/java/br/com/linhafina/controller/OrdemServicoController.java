@@ -27,14 +27,19 @@ public class OrdemServicoController {
     }
 
     @GetMapping
-    public List<OrdemServicoResponse> listar() { return service.listar(); }
+    public List<OrdemServicoResponse> listar() {
+        return service.listar();
+    }
 
     @GetMapping("/{id}")
-    public OrdemServicoResponse obter(@PathVariable Long id) { return service.obter(id); }
+    public OrdemServicoResponse obter(@PathVariable Long id) {
+        return service.obter(id);
+    }
 
     @PostMapping
     public ResponseEntity<OrdemServicoResponse> criar(@Valid @RequestBody OrdemServicoRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(request));
+        OrdemServicoResponse resposta = service.criar(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 
     @PutMapping("/{id}")

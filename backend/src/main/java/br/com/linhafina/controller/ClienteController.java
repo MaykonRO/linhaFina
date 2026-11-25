@@ -27,14 +27,19 @@ public class ClienteController {
     }
 
     @GetMapping
-    public List<ClienteResponse> listar() { return service.listar(); }
+    public List<ClienteResponse> listar() {
+        return service.listar();
+    }
 
     @GetMapping("/{id}")
-    public ClienteResponse obter(@PathVariable Long id) { return service.obter(id); }
+    public ClienteResponse obter(@PathVariable Long id) {
+        return service.obter(id);
+    }
 
     @PostMapping
     public ResponseEntity<ClienteResponse> criar(@Valid @RequestBody ClienteRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(request));
+        ClienteResponse resposta = service.criar(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 
     @PutMapping("/{id}")
