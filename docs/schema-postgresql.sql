@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict bkdrc6bjrq9UExnD3BV36gq7syFzZZQRDu4OVQAu42KUTjfgsgYfi43zjyAauTo
+\restrict Xk6rGXX1fm0x0Ptwnl6VDa8QOPxVKcRe9ujPN2jaFeXJFsdavQ2WfOg8MIKKHKf
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -46,18 +46,6 @@ CREATE TABLE public.clientes (
     email character varying(160),
     criado_em timestamp without time zone NOT NULL
 );
-
-
---
--- Name: orcamento_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.orcamento_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
 
 
 --
@@ -170,5 +158,5 @@ ALTER TABLE ONLY public.ordens_servico
 -- PostgreSQL database dump complete
 --
 
-\unrestrict bkdrc6bjrq9UExnD3BV36gq7syFzZZQRDu4OVQAu42KUTjfgsgYfi43zjyAauTo
+\unrestrict Xk6rGXX1fm0x0Ptwnl6VDa8QOPxVKcRe9ujPN2jaFeXJFsdavQ2WfOg8MIKKHKf
 

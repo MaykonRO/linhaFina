@@ -93,6 +93,7 @@ DROP TABLE IF EXISTS fichas_medidas CASCADE;
 DROP TABLE IF EXISTS funcionarias CASCADE;
 DROP TABLE IF EXISTS servicos CASCADE;
 DROP TABLE IF EXISTS pessoas CASCADE;
+DROP SEQUENCE IF EXISTS orcamento_seq;
 
 -- A entidade Cliente usa IDENTITY e precisa de uma sequencia propria apos a heranca.
 CREATE SEQUENCE IF NOT EXISTS clientes_id_seq;
