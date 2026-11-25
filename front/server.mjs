@@ -57,15 +57,14 @@ const servidor = createServer(async (requisicao, resposta) => {
     resposta.end(conteudo)
   } catch (erro) {
     if (erro.code === 'ENOENT') {
-      // Redireciona para a página 404 do próprio sistema. O caminho é
-      // relativo à profundidade da URL pedida, para funcionar também quando
-      // a pasta é servida em um subdiretório (ex.: /linha-fina/).
+      // O MVP não possui página 404: volta ao dashboard, que mantém a proteção
+      // de sessão e redireciona ao login quando necessário.
       const profundidade = caminho.split('/').filter(Boolean).length
       const prefixo = '../'.repeat(profundidade)
       resposta.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' })
       resposta.end(
         '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=' +
-          `${prefixo}pages/nao-encontrada.html">`,
+          `${prefixo}index.html">`,
       )
     } else {
       console.error(`Erro interno em ${requisicao.url}:`, erro.message)

@@ -1,243 +1,110 @@
-/**
- * Clientes (pages/clientes.html) — lista de clientes do ateliê.
- *
- * Busca com debounce (nome, e-mail, telefone), filtro de situação financeira,
- * ordenação por nome, serviços e último atendimento, e ações de editar,
- * excluir e ver perfil.
- */
-
+/** Listagem e CRUD de clientes do MVP. */
 import { iniciarApp, recarregarDados } from '../app/boot.js'
 import { obterDb, acoes, assinarStore, obterEstadoRequisicao, ESTADO_REQUISICAO } from '../app/store.js'
 import { blocoEstadoRequisicao, avisoSemIntegracao } from '../components/estados.js'
-import { caminho } from '../app/rotas.js'
 import { toast } from '../components/toast.js'
 import { h, debounce } from '../components/dom.js'
 import { icone } from '../components/icons.js'
-import { pageHeader, badge, botao, avatar, campoBusca, criarSelect } from '../components/ui.js'
+import { pageHeader, botao, avatar, campoBusca } from '../components/ui.js'
 import { criarDataTable } from '../components/datatable.js'
 import { abrirModalCliente } from '../components/form-cliente.js'
 import { confirmar } from '../components/confirm.js'
-import { resumoCliente } from '../services/estatisticas.js'
-import { formatarData, formatarTelefone } from '../utils/format.js'
-import { SITUACAO_CLIENTE } from '../utils/status.js'
+import { formatarData, formatarTelefone, textoSeguro } from '../utils/format.js'
 
-
-/** Ação de linha compacta: ícone com rótulo acessível (link quando navega). */
-function botaoIcone({ rotulo, icone: nome, para = null, onClick, perigo = false }) {
-  const classe = `botao-linha${perigo ? ' botao-linha--perigo' : ''}`
-  if (para) {
-    return h('a', { href: para, 'aria-label': rotulo, title: rotulo, class: classe, innerHTML: icone(nome, 'ic ic--16') })
-  }
-  return h('button', { type: 'button', 'aria-label': rotulo, title: rotulo, onClick, class: classe, innerHTML: icone(nome, 'ic ic--16') })
+function botaoIcone({ rotulo, icone: nome, onClick, perigo = false }) {
+  return h('button', {
+    type: 'button', 'aria-label': rotulo, title: rotulo, onClick,
+    class: `botao-linha${perigo ? ' botao-linha--perigo' : ''}`,
+    innerHTML: icone(nome, 'ic ic--16'),
+  })
 }
 
 class PaginaClientes {
   iniciar() {
     this.busca = ''
-    this.buscaDebounced = ''
-    this.filtroSituacao = ''
+    this.termo = ''
     this.destino = document.getElementById('pagina')
     this.renderizar()
   }
 
   linhasFiltradas() {
-    const db = obterDb()
-    const linhasBase = db.clientes.map((cliente) => {
-      const resumo = resumoCliente(db, cliente.id)
-      return { ...cliente, resumo, situacao: resumo.situacao }
-    })
+    const termo = this.termo.trim().toLocaleLowerCase('pt-BR')
+    if (!termo) return obterDb().clientes
+    return obterDb().clientes.filter((cliente) =>
+      `${textoSeguro(cliente.nome)} ${textoSeguro(cliente.email)} ${textoSeguro(cliente.telefone)}`
+        .toLocaleLowerCase('pt-BR').includes(termo)
+    )
+  }
 
-    const termo = this.buscaDebounced.trim().toLowerCase()
-    const digitosBusca = termo.replace(/\D/g, '')
+  abrirFormulario(cliente = null) {
+    abrirModalCliente({ cliente })
+  }
 
-    return linhasBase.filter((cliente) => {
-      if (this.filtroSituacao && cliente.situacao !== this.filtroSituacao) return false
-      if (!termo) return true
-      if (`${cliente.nome} ${cliente.email}`.toLowerCase().includes(termo)) return true
-      // Busca por telefone apenas quando o termo tem dígitos suficientes.
-      return digitosBusca.length >= 3 && cliente.telefone.includes(digitosBusca)
+  confirmarExclusao(cliente) {
+    confirmar({
+      titulo: 'Excluir cliente?',
+      descricao: `Excluir ${cliente.nome}? A API poderá recusar a operação se houver ordens de serviço vinculadas.`,
+      rotuloConfirmar: 'Excluir cliente',
+      onConfirmar: async () => {
+        const resultado = await acoes.clientes.remover(cliente.id)
+        if (!resultado.ok) { toast.aviso(resultado.erro); return false }
+        toast.sucesso('Cliente excluído.')
+        return true
+      },
     })
   }
 
   renderizar() {
+    if (!this.destino) return
     const db = obterDb()
     const linhas = this.linhasFiltradas()
-
-    const buscaEl = campoBusca({
-      valor: this.busca,
-      onValor: (valor) => {
-        this.busca = valor
-        atualizarComDebounce()
-      },
-      placeholder: 'Buscar por nome, e-mail ou telefone⬦',
-      rotulo: 'Buscar cliente',
-      classe: 'busca-clientes',
+    const busca = campoBusca({
+      valor: this.busca, placeholder: 'Buscar por nome, e-mail ou telefone…', rotulo: 'Buscar cliente', classe: 'busca-clientes',
+      onValor: (valor) => { this.busca = valor; atualizarBusca() },
     })
-    const atualizarComDebounce = debounce(() => {
-      this.buscaDebounced = this.busca
-      this.renderizar()
-    }, 300)
-
-    const selectSituacao = criarSelect({
-      'aria-label': 'Filtrar por situação financeira',
-      valor: this.filtroSituacao,
-      classe: 'filtro-clientes',
-      opcoes: [
-        { value: '', rotulo: 'Todas as situações' },
-        { value: 'em_dia', rotulo: 'Em dia' },
-        { value: 'pendente', rotulo: 'Pagamento pendente' },
-        { value: 'inadimplente', rotulo: 'Inadimplente' },
-      ],
-      onChange: (evento) => {
-        this.filtroSituacao = evento.target.value
-        this.renderizar()
-      },
-    })
-
-    const abrirNova = () => abrirModalCliente({ cliente: null, onFechar: () => this.renderizar() })
-    const abrirEdicao = (cliente) => abrirModalCliente({ cliente, onFechar: () => this.renderizar() })
-    const excluir = async (cliente) => {
-      const resultado = await acoes.clientes.remover(cliente.id)
-      if (resultado.ok) {
-        toast.sucesso('Cliente removida com sucesso.')
-        return true
-      }
-      toast.aviso(resultado.erro)
-      return false
-    }
-
-    const colunas = [
-      {
-        chave: 'nome',
-        cabecalho: 'Nome',
-        ordenar: (c) => c.nome,
-        render: (c) => h('a', { href: caminho('cliente-detalhe', { id: c.id }), class: 'link-cliente' },
-          avatar({ nome: c.nome, tamanho: 'sm' }),
-          h('span', { class: 'texto-truncado' }, c.nome)
-        ),
-      },
-      {
-        chave: 'telefone',
-        cabecalho: 'Telefone',
-        render: (c) => h('span', { class: 'tnum texto-suave' }, formatarTelefone(c.telefone)),
-      },
-      { chave: 'email', cabecalho: 'E-mail', render: (c) => h('span', { class: 'texto-suave' }, c.email) },
-      {
-        chave: 'servicos',
-        cabecalho: 'Serviços',
-        alinhamento: 'direita',
-        ordenar: (c) => c.resumo.totalServicos,
-        render: (c) => h('span', { class: 'tnum texto-medio' }, c.resumo.totalServicos),
-      },
-      {
-        chave: 'ultimo',
-        cabecalho: 'Último atendimento',
-        ordenar: (c) => c.resumo.ultimoAtendimento,
-        render: (c) => h('span', { class: 'tnum texto-suave' }, formatarData(c.resumo.ultimoAtendimento)),
-      },
-      {
-        chave: 'situacao',
-        cabecalho: 'Situação financeira',
-        render: (c) => badge({ status: SITUACAO_CLIENTE[c.situacao] }),
-      },
-      {
-        chave: 'acoes',
-        cabecalho: '',
-        alinhamento: 'direita',
-        largura: 'col-estreita',
-        render: (c) =>
-          h('div', { class: 'acoes-linha' },
-            botaoIcone({ rotulo: `Ver perfil de ${c.nome}`, icone: 'Eye', para: caminho('cliente-detalhe', { id: c.id }) }),
-            botaoIcone({ rotulo: `Editar ${c.nome}`, icone: 'Pencil', onClick: () => abrirEdicao(c) }),
-            botaoIcone({ rotulo: `Excluir ${c.nome}`, icone: 'Trash2', perigo: true, onClick: () => this.confirmarExclusao(c, excluir) })
-          ),
-      },
-    ]
-
-    const vazio = db.clientes.length
-      ? {
-          icone: 'SearchX',
-          titulo: 'Nenhum cliente encontrado',
-          descricao: 'Ajuste a busca ou o filtro de situação financeira.',
-        }
-      : {
-          icone: 'Users',
-          titulo: 'Nenhum cliente cadastrado.',
-          descricao: 'Use a ação acima para cadastrar a primeira cliente quando a integração estiver disponível.',
-          acao: botao({ icone: 'UserPlus', children: ['Nova cliente'], onClick: abrirNova }),
-        }
-
+    const atualizarBusca = debounce(() => { this.termo = this.busca; this.renderizar() }, 250)
+    const acoesLinha = (cliente) => h('div', { class: 'acoes-linha' },
+      botaoIcone({ rotulo: `Editar ${cliente.nome}`, icone: 'Pencil', onClick: () => this.abrirFormulario(cliente) }),
+      botaoIcone({ rotulo: `Excluir ${cliente.nome}`, icone: 'Trash2', perigo: true, onClick: () => this.confirmarExclusao(cliente) })
+    )
     const tabela = criarDataTable({
-      colunas,
       linhas,
-      vazio,
-      rotuloSingular: 'cliente',
-      rotuloPlural: 'clientes',
-      porPagina: 8,
-      barraFerramentas: h('div', { class: 'barra-filtros-simples' }, buscaEl, selectSituacao),
-      renderLinhaMobile: (c) =>
-        h('div', { class: 'cartao-cliente-mobile' },
-          avatar({ nome: c.nome, tamanho: 'md' }),
-          h('div', { class: 'cartao-cliente-mobile-corpo' },
-            h('div', { class: 'cartao-cliente-mobile-topo' },
-              h('a', { href: caminho('cliente-detalhe', { id: c.id }), class: 'link-cliente texto-truncado' }, c.nome),
-              h('div', { class: 'acoes-linha' },
-                botaoIcone({ rotulo: `Editar ${c.nome}`, icone: 'Pencil', onClick: () => abrirEdicao(c) }),
-                botaoIcone({ rotulo: `Excluir ${c.nome}`, icone: 'Trash2', perigo: true, onClick: () => this.confirmarExclusao(c, excluir) })
-              )
-            ),
-            h('p', { class: 'cartao-cliente-telefone' },
-              h('span', { class: 'ic-caixa', innerHTML: icone('Phone', 'ic ic--14') }),
-              h('span', { class: 'tnum' }, formatarTelefone(c.telefone))
-            ),
-            h('div', { class: 'cartao-cliente-badges' },
-              badge({ status: SITUACAO_CLIENTE[c.situacao] }),
-              badge({
-                variante: 'neutral',
-                rotulo: `${c.resumo.totalServicos} ${c.resumo.totalServicos === 1 ? 'serviço' : 'serviços'}`,
-              })
-            )
-          )
-        ),
+      colunas: [
+        { chave: 'nome', cabecalho: 'Nome', ordenar: (c) => c.nome, render: (c) => h('div', { class: 'link-cliente' }, avatar({ nome: c.nome, tamanho: 'sm' }), h('span', { class: 'texto-truncado' }, c.nome)) },
+        { chave: 'telefone', cabecalho: 'Telefone', render: (c) => h('span', { class: 'tnum texto-suave' }, formatarTelefone(c.telefone)) },
+        { chave: 'email', cabecalho: 'E-mail', render: (c) => h('span', { class: 'texto-suave' }, c.email || '—') },
+        { chave: 'criadoEm', cabecalho: 'Cadastro', ordenar: (c) => c.criadoEm, render: (c) => h('span', { class: 'tnum texto-suave' }, formatarData(c.criadoEm?.slice?.(0, 10))) },
+        { chave: 'acoes', cabecalho: 'Ações', alinhamento: 'direita', render: acoesLinha },
+      ],
+      vazio: db.clientes.length
+        ? { icone: 'SearchX', titulo: 'Nenhum cliente encontrado', descricao: 'Revise o termo da busca.' }
+        : { icone: 'Users', titulo: 'Nenhum cliente cadastrado', descricao: 'Cadastre o primeiro cliente para começar.', acao: botao({ icone: 'UserPlus', children: ['Nova cliente'], onClick: () => this.abrirFormulario() }) },
+      barraFerramentas: h('div', { class: 'barra-filtros-simples' }, busca),
+      rotuloSingular: 'cliente', rotuloPlural: 'clientes', porPagina: 8,
+      renderLinhaMobile: (c) => h('div', { class: 'cartao-cliente-mobile' },
+        avatar({ nome: c.nome, tamanho: 'md' }),
+        h('div', { class: 'cartao-cliente-mobile-corpo' },
+          h('div', { class: 'cartao-cliente-mobile-topo' }, h('strong', { class: 'texto-truncado' }, c.nome), acoesLinha(c)),
+          h('p', { class: 'cartao-cliente-telefone' }, h('span', { class: 'ic-caixa', innerHTML: icone('Phone', 'ic ic--14') }), h('span', { class: 'tnum' }, formatarTelefone(c.telefone))),
+          h('p', { class: 'texto-suave' }, c.email || '—')
+        )
+      ),
     })
 
     const requisicao = obterEstadoRequisicao()
-    const blocoEstado = blocoEstadoRequisicao({
-      status: requisicao.status,
-      erro: requisicao.erro,
-      onTentar: () => recarregarDados(),
-    })
-    const avisoIntegracao = requisicao.status === ESTADO_REQUISICAO.SEM_INTEGRACAO ? avisoSemIntegracao() : null
-
-    this.destino.replaceChildren(
-      h('div', { class: 'pilha-6 animar-entrada' },
-        pageHeader({
-          titulo: 'Clientes',
-          descricao: 'Cadastro, histórico e situação financeira das clientes do ateliê.',
-          acoes: [botao({ icone: 'UserPlus', children: ['Nova cliente'], onClick: abrirNova })],
-        }),
-        avisoIntegracao,
-        blocoEstado ?? tabela.raiz
-      )
-    )
-  }
-
-  confirmarExclusao(cliente, excluir) {
-    confirmar({
-      titulo: 'Excluir cliente?',
-      descricao: `Você está excluindo ${cliente.nome}. Esta ação não pode ser desfeita — e clientes com ordens de serviço ou orçamentos no histórico não podem ser removidas.`,
-      rotuloConfirmar: 'Excluir',
-      onConfirmar: () => excluir(cliente),
-      onFechar: () => this.renderizar(),
-    })
+    const blocoEstado = blocoEstadoRequisicao({ status: requisicao.status, erro: requisicao.erro, onTentar: () => recarregarDados() })
+    this.destino.replaceChildren(h('div', { class: 'pilha-6 animar-entrada' },
+      pageHeader({
+        titulo: 'Clientes', descricao: 'Cadastre e mantenha os dados de contato.',
+        acoes: [botao({ icone: 'UserPlus', children: ['Nova cliente'], onClick: () => this.abrirFormulario() })],
+      }),
+      requisicao.status === ESTADO_REQUISICAO.SEM_INTEGRACAO ? avisoSemIntegracao() : null,
+      blocoEstado ?? tabela.raiz
+    ))
   }
 }
 
-// Inicialização no fim do arquivo: as classes/constantes do módulo
-// precisam estar definidas antes do primeiro uso.
-const app = iniciarApp('clientes')
-if (app) {
-  const pagina = new PaginaClientes()
-  assinarStore(() => pagina.renderizar())
-  pagina.iniciar()
-}
+iniciarApp('clientes')
+const pagina = new PaginaClientes()
+assinarStore(() => pagina.renderizar())
+pagina.iniciar()

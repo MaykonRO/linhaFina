@@ -2,14 +2,11 @@ package br.com.linhafina.controller;
 
 import br.com.linhafina.dto.ClienteRequest;
 import br.com.linhafina.dto.ClienteResponse;
-import br.com.linhafina.dto.Criacao;
 import br.com.linhafina.service.ClienteService;
 import jakarta.validation.Valid;
-import jakarta.validation.groups.Default;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +33,7 @@ public class ClienteController {
     public ClienteResponse obter(@PathVariable Long id) { return service.obter(id); }
 
     @PostMapping
-    public ResponseEntity<ClienteResponse> criar(@Validated({Criacao.class, Default.class}) @RequestBody ClienteRequest request) {
+    public ResponseEntity<ClienteResponse> criar(@Valid @RequestBody ClienteRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(request));
     }
 

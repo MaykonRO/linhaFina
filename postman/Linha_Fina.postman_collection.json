@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "4d6f50d0-1e8f-4f6b-a2b0-linha-fina-api",
-    "name": "Linha Fina — API Local",
-    "description": "Coleção para testar a API Java do Linha Fina. Execute primeiro a pasta 01 Autenticação e depois os cadastros de apoio antes da OS.",
+    "_postman_id": "4d6f50d0-1e8f-4f6b-a2b0-linha-fina-mvp",
+    "name": "Linha Fina — MVP",
+    "description": "Coleção do MVP com autenticação, clientes e ordens de serviço.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -17,23 +17,15 @@
             "body": {"mode": "raw", "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"senha\": \"{{senha_admin}}\"\n}"},
             "url": {"raw": "{{baseUrl}}/autenticacao/entrar", "host": ["{{baseUrl}}"], "path": ["autenticacao", "entrar"]}
           },
-          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Login realizado com sucesso', function () { pm.response.to.have.status(200); });"]}}]
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Login realizado', function () { pm.response.to.have.status(200); });"]}}]
         },
         {
           "name": "Sessão atual",
-          "request": {
-            "method": "GET",
-            "url": {"raw": "{{baseUrl}}/autenticacao/sessao", "host": ["{{baseUrl}}"], "path": ["autenticacao", "sessao"]}
-          },
-          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Sessão restaurada', function () { pm.response.to.have.status(200); });"]}}]
+          "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/autenticacao/sessao", "host": ["{{baseUrl}}"], "path": ["autenticacao", "sessao"]}}
         },
         {
           "name": "Logout",
-          "request": {
-            "method": "POST",
-            "url": {"raw": "{{baseUrl}}/autenticacao/sair", "host": ["{{baseUrl}}"], "path": ["autenticacao", "sair"]}
-          },
-          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Sessão encerrada', function () { pm.response.to.have.status(204); });"]}}]
+          "request": {"method": "POST", "url": {"raw": "{{baseUrl}}/autenticacao/sair", "host": ["{{baseUrl}}"], "path": ["autenticacao", "sair"]}}
         }
       ]
     },
@@ -49,7 +41,7 @@
           "request": {
             "method": "POST",
             "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {"mode": "raw", "raw": "{\n  \"nome\": \"Cliente Postman Teste\",\n  \"telefone\": \"11999999999\",\n  \"email\": \"postman@teste.local\",\n  \"cidade\": \"São Paulo\",\n  \"observacoes\": \"Registro criado para teste\",\n  \"medidas\": null\n}"},
+            "body": {"mode": "raw", "raw": "{\n  \"nome\": \"Cliente Postman Teste\",\n  \"telefone\": \"11999999999\",\n  \"email\": \"postman@teste.local\"\n}"},
             "url": {"raw": "{{baseUrl}}/clientes", "host": ["{{baseUrl}}"], "path": ["clientes"]}
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Cliente criada', function () {", "  pm.response.to.have.status(201);", "  pm.environment.set('cliente_id', pm.response.json().id);", "});"]}}]
@@ -59,53 +51,26 @@
           "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/clientes/{{cliente_id}}", "host": ["{{baseUrl}}"], "path": ["clientes", "{{cliente_id}}"]}}
         },
         {
-          "name": "Salvar medidas da cliente",
+          "name": "Editar cliente",
           "request": {
             "method": "PUT",
             "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {"mode": "raw", "raw": "{\n  \"medidas\": {\n    \"busto\": 90,\n    \"cintura\": 70,\n    \"quadril\": 100,\n    \"observacoes\": \"Medidas de teste\"\n  }\n}"},
+            "body": {"mode": "raw", "raw": "{\n  \"nome\": \"Cliente Postman Editada\",\n  \"telefone\": \"11988887777\",\n  \"email\": \"postman@teste.local\"\n}"},
             "url": {"raw": "{{baseUrl}}/clientes/{{cliente_id}}", "host": ["{{baseUrl}}"], "path": ["clientes", "{{cliente_id}}"]}
           }
-        }
-      ]
-    },
-    {
-      "name": "03 Cadastros de apoio",
-      "item": [
-        {
-          "name": "Criar serviço de teste",
-          "request": {
-            "method": "POST",
-            "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {"mode": "raw", "raw": "{\n  \"nome\": \"Serviço Postman Teste\",\n  \"categoria\": \"Ajustes\",\n  \"descricao\": \"Serviço para teste de API\",\n  \"precoReferencia\": 100,\n  \"tempoEstimadoDias\": 2,\n  \"ativo\": true\n}"},
-            "url": {"raw": "{{baseUrl}}/servicos", "host": ["{{baseUrl}}"], "path": ["servicos"]}
-          },
-          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Serviço criado', function () {", "  pm.response.to.have.status(201);", "  pm.environment.set('servico_id', pm.response.json().id);", "});"]}}]
         },
         {
-          "name": "Criar funcionária de teste",
-          "request": {
-            "method": "POST",
-            "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {"mode": "raw", "raw": "{\n  \"nome\": \"Funcionária Postman Teste\",\n  \"cargo\": \"Costureira\",\n  \"papel\": \"funcionario\",\n  \"status\": \"disponivel\",\n  \"especialidade\": \"Ajustes\"\n}"},
-            "url": {"raw": "{{baseUrl}}/funcionarias", "host": ["{{baseUrl}}"], "path": ["funcionarias"]}
-          },
-          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Funcionária criada', function () {", "  pm.response.to.have.status(201);", "  pm.environment.set('funcionaria_id', pm.response.json().id);", "});"]}}]
+          "name": "Excluir cliente",
+          "request": {"method": "DELETE", "url": {"raw": "{{baseUrl}}/clientes/{{cliente_id}}", "host": ["{{baseUrl}}"], "path": ["clientes", "{{cliente_id}}"]}}
         }
       ]
     },
     {
-      "name": "04 Ordens de serviço",
+      "name": "03 Ordens de Serviço",
       "item": [
         {
-          "name": "Calcular previsão",
-          "event": [{"listen": "prerequest", "script": {"type": "text/javascript", "exec": ["pm.environment.set('hoje', new Date().toISOString().slice(0, 10));"]}}],
-          "request": {
-            "method": "POST",
-            "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {"mode": "raw", "raw": "{\n  \"clienteId\": \"{{cliente_id}}\",\n  \"servicoId\": \"{{servico_id}}\",\n  \"responsavelId\": \"{{funcionaria_id}}\",\n  \"tipoPeca\": \"Vestido\",\n  \"descricaoPeca\": \"Peça para teste no Postman\",\n  \"observacoes\": \"\",\n  \"sobMedida\": false,\n  \"ajuste\": true,\n  \"urgente\": false,\n  \"valorServico\": 100,\n  \"desconto\": 0,\n  \"dataEntrada\": \"{{hoje}}\",\n  \"dataProva\": null,\n  \"status\": \"aguardando\"\n}"},
-            "url": {"raw": "{{baseUrl}}/ordens-servico/previsao", "host": ["{{baseUrl}}"], "path": ["ordens-servico", "previsao"]}
-          }
+          "name": "Listar OSs",
+          "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/ordens-servico", "host": ["{{baseUrl}}"], "path": ["ordens-servico"]}}
         },
         {
           "name": "Criar OS",
@@ -113,44 +78,28 @@
           "request": {
             "method": "POST",
             "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {"mode": "raw", "raw": "{\n  \"clienteId\": \"{{cliente_id}}\",\n  \"servicoId\": \"{{servico_id}}\",\n  \"responsavelId\": \"{{funcionaria_id}}\",\n  \"tipoPeca\": \"Vestido\",\n  \"descricaoPeca\": \"Peça para teste no Postman\",\n  \"observacoes\": \"\",\n  \"sobMedida\": false,\n  \"ajuste\": true,\n  \"urgente\": false,\n  \"valorServico\": 100,\n  \"desconto\": 0,\n  \"dataEntrada\": \"{{hoje}}\",\n  \"dataProva\": null,\n  \"status\": \"aguardando\"\n}"},
+            "body": {"mode": "raw", "raw": "{\n  \"clienteId\": \"{{cliente_id}}\",\n  \"descricaoServico\": \"Ajuste de vestido para teste\",\n  \"valor\": 100,\n  \"dataEntrada\": \"{{hoje}}\",\n  \"dataPrevistaEntrega\": \"{{hoje}}\",\n  \"status\": \"pendente\"\n}"},
             "url": {"raw": "{{baseUrl}}/ordens-servico", "host": ["{{baseUrl}}"], "path": ["ordens-servico"]}
           },
           "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('OS criada', function () {", "  pm.response.to.have.status(201);", "  pm.environment.set('os_id', pm.response.json().id);", "});"]}}]
         },
         {
-          "name": "Avançar etapa",
-          "request": {"method": "POST", "url": {"raw": "{{baseUrl}}/ordens-servico/{{os_id}}/avancar-status", "host": ["{{baseUrl}}"], "path": ["ordens-servico", "{{os_id}}", "avancar-status"]}}
+          "name": "Consultar OS",
+          "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/ordens-servico/{{os_id}}", "host": ["{{baseUrl}}"], "path": ["ordens-servico", "{{os_id}}"]}}
         },
         {
-          "name": "Baixar PDF",
-          "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/ordens-servico/{{os_id}}/pdf", "host": ["{{baseUrl}}"], "path": ["ordens-servico", "{{os_id}}", "pdf"]}}
-        }
-      ]
-    },
-    {
-      "name": "05 Financeiro e configurações",
-      "item": [
-        {
-          "name": "Listar pagamentos",
-          "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/pagamentos", "host": ["{{baseUrl}}"], "path": ["pagamentos"]}}
+          "name": "Editar OS e status",
+          "event": [{"listen": "prerequest", "script": {"type": "text/javascript", "exec": ["pm.environment.set('hoje', new Date().toISOString().slice(0, 10));"]}}],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"clienteId\": \"{{cliente_id}}\",\n  \"descricaoServico\": \"Ajuste de vestido editado\",\n  \"valor\": 120,\n  \"dataEntrada\": \"{{hoje}}\",\n  \"dataPrevistaEntrega\": \"{{hoje}}\",\n  \"status\": \"em_andamento\"\n}"},
+            "url": {"raw": "{{baseUrl}}/ordens-servico/{{os_id}}", "host": ["{{baseUrl}}"], "path": ["ordens-servico", "{{os_id}}"]}
+          }
         },
         {
-          "name": "Resumo financeiro",
-          "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/relatorios/resumo", "host": ["{{baseUrl}}"], "path": ["relatorios", "resumo"]}}
-        },
-        {
-          "name": "Consultar configurações",
-          "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/configuracoes", "host": ["{{baseUrl}}"], "path": ["configuracoes"]}}
-        }
-      ]
-    },
-    {
-      "name": "06 Vitrine pública",
-      "item": [
-        {
-          "name": "Listar peças públicas",
-          "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/vitrine/publica", "host": ["{{baseUrl}}"], "path": ["vitrine", "publica"]}}
+          "name": "Excluir OS",
+          "request": {"method": "DELETE", "url": {"raw": "{{baseUrl}}/ordens-servico/{{os_id}}", "host": ["{{baseUrl}}"], "path": ["ordens-servico", "{{os_id}}"]}}
         }
       ]
     }
@@ -160,8 +109,6 @@
     {"key": "admin_email", "value": "linha-fina@gmail.com"},
     {"key": "senha_admin", "value": ""},
     {"key": "cliente_id", "value": ""},
-    {"key": "servico_id", "value": ""},
-    {"key": "funcionaria_id", "value": ""},
     {"key": "os_id", "value": ""},
     {"key": "hoje", "value": ""}
   ]

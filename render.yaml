@@ -34,8 +34,6 @@ services:
         value: "true"
       - key: SERVER_SERVLET_SESSION_COOKIE_SAME_SITE
         value: None
-      - key: ATELIE_UPLOAD_DIRETORIO
-        value: /app/uploads
 
   - type: web
     name: linha-fina-web

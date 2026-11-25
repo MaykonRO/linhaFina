@@ -2,5 +2,3 @@
 DB_URL=jdbc:postgresql://localhost:5432/linhafina
 DB_USERNAME=linhafina
 DB_PASSWORD=troque-pela-senha-local
-ATELIE_CAPACIDADE_HORAS_DIA=8
-ATELIE_TAXA_URGENCIA_PADRAO=20

@@ -42,10 +42,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/autenticacao/entrar", "/api/autenticacao/sessao").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/configuracoes", "/api/vitrine/publica", "/api/vitrine/imagens/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/configuracoes").hasAnyRole("DONO", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/clientes/**", "/api/servicos/**", "/api/funcionarias/**").hasAnyRole("DONO", "ADMIN")
-                        .requestMatchers("/api/relatorios/**").hasAnyRole("DONO", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/clientes/**").hasAnyRole("DONO", "ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(errors -> errors
                         .authenticationEntryPoint((request, response, erro) -> {

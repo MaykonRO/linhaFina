@@ -1,46 +1,40 @@
-# Deploy do Linha Fina no Render
+# Deploy do MVP no Render
 
-Este projeto possui um Blueprint (`render.yaml`) para criar a API Java, o frontend estático e o PostgreSQL gerenciado no [Render](https://dashboard.render.com/).
+O Blueprint `render.yaml` mantém três recursos:
 
-## Recursos
+- `linha-fina-api`: Web Service Docker com Java 21 e Spring Boot.
+- `linha-fina-web`: Static Site com o frontend HTML/CSS/JS.
+- `linha-fina-db`: PostgreSQL gerenciado.
 
-| Recurso | Tipo | URL prevista |
-|---|---|---|
-| `linha-fina-api` | Web Service Docker | `https://linha-fina-api.onrender.com/api` |
-| `linha-fina-web` | Static Site | `https://linha-fina-web.onrender.com` |
-| `linha-fina-db` | PostgreSQL | Acesso interno pela API |
+## URLs
 
-O `Dockerfile` usa Maven com Java 21 para compilar o backend e uma imagem JRE separada para executar somente o JAR.
+- Frontend: `https://linha-fina-web.onrender.com`
+- API: `https://linha-fina-api.onrender.com/api`
 
-## Como publicar
+## Variáveis
 
-1. Confirme que `render.yaml` e `Dockerfile` estão commitados na branch `main` de `MaykonRO/linhaFina`.
-2. No Render Dashboard, conecte sua conta GitHub e escolha **New → Blueprint Instance**.
-3. Selecione o repositório `MaykonRO/linhaFina` e a branch `main`.
-4. Revise os três recursos e confirme a criação.
-5. Aguarde o build da API e a publicação do Static Site.
+O Blueprint configura `DB_URL`, usuário e senha do PostgreSQL, `APP_ADMIN_*`, `APP_CORS_ORIGINS`, `COOKIE_SECURE` e `SERVER_SERVLET_SESSION_COOKIE_SAME_SITE`.
 
-## Segredos e configuração
+- O e-mail administrativo configurado é `linha-fina@gmail.com`.
+- A senha fica somente no painel do Render e no `.env` local, nunca no Git.
+- `COOKIE_SECURE=true` exige HTTPS.
+- `SameSite=None` permite o login entre frontend e API com cookie `Secure`.
 
-- `DB_URL` usa o hostname interno do PostgreSQL do Blueprint; `DB_USERNAME` e `DB_PASSWORD` são lidos via `fromDatabase`.
-- `APP_ADMIN_PASSWORD` é gerado automaticamente pelo Render. Consulte-o somente no painel **Environment** da API, sem compartilhá-lo publicamente.
-- O e-mail administrativo configurado é `linha-fina@gmail.com`; a senha é mantida somente no painel do Render e no `.env` local.
-- `APP_CORS_ORIGINS` libera o frontend HTTPS do Render.
-- `COOKIE_SECURE=true` exige HTTPS para o cookie de sessão e `SERVER_SERVLET_SESSION_COOKIE_SAME_SITE=None` permite o login entre os domínios do frontend e da API, sempre com `Secure`.
-- Nenhuma senha real está no repositório.
+## Migração do banco
 
-## Validação após o deploy
+Antes de publicar o MVP sobre uma base antiga, confirme os backups e execute `backend/db/migration/V1__simplificar_mvp.sql` no banco correspondente. O script remove tabelas fora do MVP e preserva os registros necessários.
 
-- API pública: `https://linha-fina-api.onrender.com/api/configuracoes` deve responder JSON.
-- Vitrine pública da API: `https://linha-fina-api.onrender.com/api/vitrine/publica` deve responder um array.
-- Frontend: `https://linha-fina-web.onrender.com` deve abrir o login.
-- Entre com o e-mail inicial e a senha exibida somente no painel da API.
-- Cadastre uma cliente e consulte-a para confirmar a persistência no PostgreSQL.
+## Validação
 
-## Observações do plano gratuito
+1. Abra `https://linha-fina-web.onrender.com`.
+2. Faça login com o administrador configurado.
+3. Cadastre uma cliente.
+4. Crie uma OS vinculada.
+5. Consulte, edite e exclua a OS.
+6. Exclua a cliente quando não houver OS vinculada.
 
-- Serviços gratuitos podem hibernar após inatividade. A primeira requisição após hibernação pode demorar.
-- O sistema de arquivos local é temporário. Uploads em `/app/uploads` podem ser perdidos em uma reinicialização/redeploy. Para retenção permanente, configure um disco persistente ou armazenamento de objetos em um ambiente compatível.
-- O banco PostgreSQL deve ser criado e mantido pelo Blueprint; não é necessário criar outro banco manualmente.
+## Plano gratuito
 
-Documentação oficial usada: [Blueprint YAML Reference](https://render.com/docs/blueprint-spec) e [Static Sites](https://render.com/docs/static-sites).
+Serviços podem hibernar após inatividade. O primeiro acesso pode demorar. O plano gratuito deve ser revisado antes da data de expiração informada no dashboard.
+
+Não há uploads nem módulos avançados no MVP.

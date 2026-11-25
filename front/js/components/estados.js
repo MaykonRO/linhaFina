@@ -140,12 +140,7 @@ function rotuloEntidade(entidade) {
   if (!entidade) return 'Operação'
   const mapa = {
     clientes: 'Operação de cliente',
-    servicos: 'Operação de serviço',
     ordens: 'Operação de ordem de serviço',
-    orcamentos: 'Operação de orçamento',
-    funcionarias: 'Operação de equipe',
-    vitrine: 'Operação de vitrine',
-    configuracoes: 'Operação de configurações',
     autenticacao: 'Operação de autenticação',
   }
   return mapa[entidade] ?? 'Operação'

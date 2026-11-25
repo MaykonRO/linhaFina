@@ -1,270 +1,71 @@
-# Linha Fina
- 
-Sistema de gestão para ateliê de costura — ajustes e peças sob medida.
- 
-Projeto acadêmico (Fatec) em Java, com back-end e front-end integrados via servidor, banco de dados e operações CRUD. Desenvolvido em dupla. Entrega: **26/11/2026**.
- 
-## Sobre o projeto
- 
-O **Linha Fina** nasce da rotina de um ateliê de costura: uma cliente chega com uma peça para ajustar ou pede uma confecção sob medida, e tudo começa com a abertura de uma **Ordem de Serviço (OS)**. A partir desse núcleo, o sistema evolui para automatizar regras reais do dia a dia de uma costureira — como calcular prazos de entrega considerando a fila de serviços pendentes, lidar com pedidos urgentes, folgas do ateliê e muito mais.
- 
-## Funcionalidade principal (núcleo)
- 
-A entrega mínima e mais urgente do projeto:
- 
-- **CRUD de Ordem de Serviço** — criar, listar, editar e excluir/cancelar uma OS (cliente, tipo de serviço, descrição da peça, valor, status, datas)
-- Cadastros de apoio: **Cliente** e **Serviço** (também com CRUD completo)
-Esse núcleo sozinho já garante um sistema funcional e aprovável. As funcionalidades abaixo são incrementos construídos por cima dele.
- 
-## Funcionalidades auxiliares (ordem sugerida de implementação)
- 
-Ordenadas pelo impacto e nível de interesse em desenvolver — da mais desafiadora/divertida para a mais simples:
- 
-### 🔥 Alto impacto
-1. **Cálculo automático de prazo de entrega** — soma a fila de OSs pendentes para sugerir a data de entrega (o diferencial do projeto, inspirado em lógica de escalonamento)
-2. **Pedido urgente** — fura a fila, cobra taxa percentual extra e avisa quais prazos já combinados serão impactados
-3. **Dias de folga/funcionamento do ateliê** — cadastro de dias sem expediente; o cálculo de prazo pula automaticamente esses dias
-4. **Múltiplas costureiras/funcionárias** — cada OS pode ser atribuída a uma pessoa específica; a fila de capacidade passa a ser calculada por funcionária
-5. **Login com níveis de acesso** — perfis de **Dono, Admin, Líder, Funcionário e Atendimento**, cada um com permissões diferentes
-6. **Orçamento prévio** — cliente solicita um orçamento antes de virar OS; fluxo de estados (orçamento → aprovado → OS)
-7. **Vitrine** — galeria pública de peças prontas, estilo portfólio, para divulgação do ateliê
-### ⚙️ Impacto médio
-8. **Prova intermediária agendada** — obrigatória na confecção sob medida; recalcula o prazo se o cliente faltar
-9. **Agenda/calendário visual de entregas** — visualização por dia/semana da fila de OSs
-10. **Taxa de guarda** — cobrança por atraso na retirada de peça pronta
-11. **Bloqueio de nova OS por pendência** — cliente com pendência (financeira ou peça não retirada) não abre novo pedido
-12. **Cancelamento de OS com motivo** — registra o porquê do cancelamento, para uso em relatórios futuros
-13. **Cliente recorrente/fidelidade** — desconto automático a partir de X serviços realizados
-14. **Relatório de faturamento** — total recebido e a receber por período (dia/semana/mês)
-15. **Ranking dos serviços mais pedidos** — relatório dos tipos de ajuste/confecção mais comuns
-16. **Exportar OS em PDF** — gera um comprovante/recibo da ordem de serviço
-### 🧩 Baixo impacto
-17. **Ficha de medidas do cliente** — cadastrada uma vez e reaproveitada automaticamente em novas OSs
-18. **Pagamento (CRUD simples)** — registra se o serviço foi pago ou não, sem integração com API de pagamento real
-19. **Histórico de peças/OSs do cliente** — consulta de todas as OSs anteriores de um cliente
-20. **Notificação por e-mail** — envio automático ao cliente quando a OS muda de status (ex.: "pronta para retirada")
-## Detalhamento das funcionalidades
- 
-Abaixo, cada funcionalidade é quebrada em sub-tarefas necessárias para implementá-la. O nível de detalhe acompanha o impacto: as de alto impacto têm o passo a passo mais fino (são o foco do projeto), as de baixo impacto ficam resumidas (vão para o fim da fila).
- 
-### 🔥 Alto impacto
- 
-**1. Cálculo automático de prazo de entrega**
-- Definir tempo estimado (em horas) por tipo de serviço, cadastrado em `Servico`
-- Ao criar uma OS, buscar todas as OSs pendentes (não entregues/não canceladas) ordenadas por data de entrada
-- Somar o tempo estimado de todas as OSs na frente na fila
-- Definir a capacidade de horas de trabalho por dia (ex.: 8h/dia) para converter "horas acumuladas" em "dias corridos"
-- Calcular e salvar a data prevista de entrega da nova OS com base nesse acúmulo
-- Exibir para o usuário, no momento da criação, a data sugerida antes de confirmar
-- Tratar o caso de fila vazia (primeira OS, prazo = tempo estimado do próprio serviço)
-**2. Pedido urgente**
-- Adicionar campo `urgente` (booleano) na OS
-- Definir percentual de taxa extra por urgência (fixo ou configurável)
-- Ao marcar como urgente, recalcular a posição da OS na fila (vai para o início, antes das pendentes)
-- Recalcular a data prevista de todas as OSs que estavam atrás na fila e que agora foram empurradas
-- Gerar um aviso/lista das OSs cujo prazo mudou, para o usuário confirmar ciente do impacto
-- Aplicar a taxa extra no valor final da OS urgente
-**3. Dias de folga/funcionamento do ateliê**
-- CRUD de `DiaDeFolga` (data específica) ou `DiaDaSemana` sem expediente (ex.: domingo)
-- Função utilitária que, dado um intervalo de dias "corridos" calculado na funcionalidade 1, pula esses dias e empurra a data final
-- Validar que não é possível agendar prova intermediária (funcionalidade 8) em dia de folga
-- Tela/endpoint simples para cadastrar e listar os dias de folga
-**4. Múltiplas costureiras/funcionárias**
-- CRUD de `Funcionaria` (nome, papel/cargo — ver funcionalidade 5)
-- Adicionar campo `funcionariaResponsavel` na OS
-- Adaptar o cálculo de fila (funcionalidade 1) para somar apenas as OSs pendentes daquela funcionária específica, não do ateliê inteiro
-- Decidir regra de atribuição: manual (quem está criando a OS escolhe) ou automática (quem tem menor fila no momento)
-- Tela simples mostrando a carga de trabalho (fila) de cada funcionária
-**5. Login com níveis de acesso (Dono, Admin, Líder, Funcionário, Atendimento)**
-- Modelo de `Usuario` com campo de papel/role (enum: Dono, Admin, Líder, Funcionário, Atendimento)
-- Tela de login (autenticação) com usuário/senha
-- Hash de senha (ex.: BCrypt) — nunca salvar senha em texto puro
-- Middleware/filtro de autorização que verifica o papel antes de liberar cada endpoint
-- Definir matriz de permissões por papel (ex.: só Dono/Admin vê relatório de faturamento; Atendimento só cria/consulta OS; Funcionário só vê suas próprias OSs)
-- Tela de gestão de usuários (CRUD, mas só acessível a Dono/Admin)
-- Sessão/token (ex.: JWT, se API REST, ou sessão de servidor se MVC tradicional)
-**6. Orçamento prévio**
-- Modelo `Orcamento` (similar à OS, mas sem os campos de execução): cliente, descrição, valor estimado, status (Pendente, Aprovado, Recusado)
-- CRUD de criação/listagem/edição de orçamento
-- Ação "Aprovar orçamento" que converte automaticamente o orçamento em uma OS nova, copiando os dados
-- Ação "Recusar orçamento" apenas muda o status, sem gerar OS
-- Validação para não aprovar duas vezes o mesmo orçamento
-**7. Vitrine**
-- Modelo `PecaVitrine` (ou reaproveitar OS entregue + flag "exibir na vitrine")
-- Upload de imagem da peça (salvar arquivo + referência no banco)
-- Endpoint/tela pública (sem necessidade de login) que lista as peças marcadas para exibição
-- Tela de administração para marcar/desmarcar uma OS entregue como "exibível" e escrever uma legenda curta
-- Layout simples tipo grade de fotos (galeria)
-### ⚙️ Impacto médio
- 
-**8. Prova intermediária agendada**
-- Campo de data/hora da prova na OS (apenas para confecção sob medida)
-- Marcar se o cliente compareceu ou não
-- Se não compareceu: reabrir campo de nova data e recalcular o prazo final da OS (reaplicando a lógica da funcionalidade 1 a partir da nova data)
-**9. Agenda/calendário visual de entregas**
-- Endpoint que retorna as OSs agrupadas por data prevista de entrega
-- Tela de calendário (semana/mês) mostrando quantas OSs vencem em cada dia
-- Clicar no dia abre a lista de OSs daquele dia
-**10. Taxa de guarda**
-- Campo de data real de retirada (quando o cliente efetivamente pega a peça)
-- Definir valor da taxa por dia de atraso e o prazo de tolerância (X dias após "pronta")
-- Cálculo automático do valor da taxa ao registrar a retirada, se atrasada
-**11. Bloqueio de nova OS por pendência**
-- Verificação, ao abrir nova OS, se o cliente tem: OS com pagamento pendente OU peça pronta não retirada
-- Bloquear a criação com mensagem explicando o motivo
-- (Opcional) permitir que Dono/Admin libere manualmente uma exceção
-**12. Cancelamento de OS com motivo**
-- Campo `motivoCancelamento` (texto livre ou lista pré-definida) ao mudar status para "Cancelada"
-- Exigir preenchimento do motivo antes de confirmar o cancelamento
-**13. Cliente recorrente/fidelidade**
-- Contar quantas OSs um cliente já teve com status "Entregue"
-- Definir regra de desconto (ex.: a cada 5 serviços, 10% de desconto no próximo)
-- Aplicar o desconto automaticamente no valor da nova OS quando a regra for atingida
-**14. Relatório de faturamento**
-- Query agregando valor total das OSs por período (filtro de data início/fim)
-- Separar "recebido" (pago) de "a receber" (pendente), usando o CRUD de pagamento (funcionalidade 18)
-- Tela simples com os totais e uma lista das OSs do período
-**15. Ranking dos serviços mais pedidos**
-- Query agrupando OSs por tipo de serviço, contando ocorrências
-- Tela/lista ordenada do mais pedido para o menos pedido
-**16. Exportar OS em PDF**
-- Escolher biblioteca (ex.: iText ou Apache PDFBox)
-- Template simples com os dados da OS (cliente, serviço, valor, datas, status)
-- Botão/endpoint que gera o PDF a partir de uma OS existente
-### 🧩 Baixo impacto
- 
-**17. Ficha de medidas do cliente**
-- CRUD de `FichaDeMedidas` vinculada ao `Cliente` (campos: busto, cintura, quadril, comprimento etc.)
-- Ao criar OS de confecção, puxar automaticamente a ficha mais recente do cliente (com opção de editar valores pontualmente para aquela OS)
-**18. Pagamento (CRUD simples)**
-- Campo `statusPagamento` na OS (enum: Pago, Não pago, Pago parcialmente — se quiserem incluir a entrada de 50%)
-- Tela/endpoint para marcar como pago
-**19. Histórico de peças/OSs do cliente**
-- Endpoint que lista todas as OSs de um cliente específico, ordenadas por data
-- Tela simples de consulta (filtro por cliente)
-**20. Notificação por e-mail**
-- Configurar `JavaMailSender`/Jakarta Mail com SMTP
-- Disparar e-mail automático quando o status da OS muda para "Pronta" ou "Entregue"
-- Template simples de texto (sem necessidade de HTML elaborado)
+# Linha Fina — MVP
 
-## Funcionalidades descartadas
- 
-- **Controle de estoque de tecido/aviamento** — complexidade desnecessária para o porte de uma costureira pequena/autônoma; faz mais sentido para ateliês de grande porte
-## Stack
+Sistema simples de gestão para um ateliê de costura, desenvolvido para estudo acadêmico de Java, Spring Boot e PostgreSQL.
 
+## Funcionalidades
 
- ## Decisões arquiteturais
- 
-- **Comunicação front-back:** via API REST — o front faz requisições (fetch) e trata a resposta de forma assíncrona (Promises/async-await)
-- **Back-end:** Java + **Spring Boot**. Uso de camadas (Controller/Service/Repository) fica condicionado ao que o professor cobrar — se exigir essa profundidade, será implementado; senão, fica mais simples
-- **Front-end:** **HTML + JavaScript puro + Tailwind CSS** — decisão consciente de não usar React: um dos integrantes da dupla não tem familiaridade com a lib e ela será vista em outra disciplina futuramente; preferiu-se não arriscar o prazo de entrega com uma curva de aprendizado desnecessária
-- **Banco de dados:** PostgreSQL
-## Estrutura de pastas (front-end)
- 
-Estrutura sugerida seguindo convenções comuns de mercado para projetos em JS puro + Tailwind, separando a camada que fala com a API da camada de tela:
- 
-```
-front/
-├── index.html                  # tela inicial (ex.: login ou dashboard)
-├── pages/
-│   ├── os/
-│   │   ├── os-lista.html
-│   │   └── os-form.html
-│   ├── clientes/
-│   │   ├── clientes-lista.html
-│   │   └── clientes-form.html
-│   ├── orcamentos/
-│   │   └── orcamentos-lista.html
-│   ├── vitrine/
-│   │   └── vitrine.html         # página pública, sem login
-│   └── auth/
-│       └── login.html
-├── src/
-│   ├── api/                     # camada de comunicação com o back (fetch)
-│   │   ├── httpClient.js        # configuração central (baseURL, headers, tratamento de erro)
-│   │   ├── osApi.js
-│   │   ├── clienteApi.js
-│   │   ├── servicoApi.js
-│   │   ├── orcamentoApi.js
-│   │   └── authApi.js
-│   ├── pages/                   # lógica JS específica de cada tela
-│   │   ├── os/
-│   │   │   ├── os-lista.js
-│   │   │   └── os-form.js
-│   │   ├── clientes/
-│   │   │   └── clientes-lista.js
-│   │   └── auth/
-│   │       └── login.js
-│   ├── components/               # pedaços de UI reaproveitáveis (ex.: navbar, modal, card de OS)
-│   │   ├── navbar.js
-│   │   └── osCard.js
-│   └── utils/                    # funções auxiliares (formatação de data, validação, etc.)
-│       ├── formatDate.js
-│       └── validators.js
-├── styles/
-│   └── input.css                 # diretivas do Tailwind (@tailwind base/components/utilities)
-├── assets/
-│   └── img/                      # imagens estáticas (ex.: logo do ateliê)
-├── tailwind.config.js
-└── package.json
-```
- 
-Princípios por trás dessa estrutura:
-- **`api/`** concentra só o que conversa com o back-end (monta URL, faz `fetch`, trata erro de rede) — se um endpoint mudar, mexe-se num lugar só
-- **`pages/`** tem a lógica de cada tela (o que acontece quando um botão é clicado, como os dados da API são usados para preencher a tela)
-- **`components/`** guarda pedaços de interface repetidos em mais de uma tela
-- Cada entidade do domínio (OS, Cliente, Serviço, Orçamento) tem seu próprio arquivo de API, espelhando as rotas do back-end
-## Equipe
- 
-Projeto desenvolvido em dupla.
+- **Login:** autenticação, sessão HttpOnly, proteção das páginas e logout.
+- **Clientes:** cadastrar, listar, consultar, editar e excluir clientes quando não houver OS vinculada.
+- **Ordens de Serviço:** criar, listar, consultar, editar e excluir OS vinculada a um cliente, com descrição, valor, datas e status.
 
-## Front-end implementado
- 
-A interface completa está em **[`front/`](front/)** — HTML5 + CSS3 + JavaScript puro (módulos ES nativos), sem framework, sem bundler e sem etapa de build. A pasta `front/` substitui a estrutura *sugerida* acima: na implementação, o CSS é próprio (design system em `front/css/`) em vez de Tailwind, e a camada de dados ficou em `front/js/app/store.js` + `front/js/services/api/`.
+Status da OS: `pendente`, `em_andamento`, `concluida` e `cancelada`.
 
-**Estado atual:** a interface original está preservada e integrada ao backend Java com PostgreSQL real. Além do núcleo, foram implementados autenticação, orçamentos, vitrine/upload, prazos, provas, configurações, pagamentos, relatórios, PDF, fidelidade, taxa de guarda e bloqueio por pendências. Não há seed, autenticação simulada nem persistência de negócio no navegador. Os pontos ainda pendentes estão identificados no relatório final.
+Não há módulos de orçamentos, financeiro avançado, pagamentos, relatórios, vitrine, equipe, agenda, folgas, provas, fidelidade ou cálculo automático de capacidade.
 
-### Como rodar o front-end
+## Tecnologias
 
-```bash
-cd front
-node server.mjs        # http://localhost:5180
+### Frontend
+
+- HTML5, CSS3 e JavaScript puro com módulos ES.
+- Tema escuro violeta e responsividade.
+- Sem React, Angular ou Vue.
+
+### Backend
+
+- Java 21.
+- Spring Boot 3.5.7.
+- Spring Web, Spring Data JPA, Spring Security e Bean Validation.
+- Maven.
+- PostgreSQL.
+
+## Estrutura
+
+```text
+linha fina/
+├── front/                 # Interface, páginas e store
+├── backend/
+│   ├── pom.xml
+│   ├── db/
+│   │   ├── migration/     # Migração manual para o esquema MVP
+│   │   └── README.md
+│   └── src/
+│       ├── main/java/br/com/linhafina/
+│       │   ├── config/
+│       │   ├── controller/
+│       │   ├── dto/
+│       │   ├── exception/
+│       │   ├── model/
+│       │   ├── repository/
+│       │   └── service/
+│       └── test/          # Testes do MVP
+├── tests/e2e/             # Fluxos do navegador
+├── docs/                  # Documentação e esquema PostgreSQL
+├── DOCUMENTACAO_JAVA.md
+├── RELATORIO_FINAL.md
+├── INICIAR.ps1
+└── TESTAR.ps1
 ```
 
-Sem back-end, o site abre normalmente e mostra o aviso de integração pendente. Para apontar a uma API, defina a configuração antes de carregar os módulos:
-
-```html
-<script>
-  window.LF_API_CONFIG = {
-    baseUrl: 'http://localhost:8080/api',
-    timeoutMs: 10000,
-    credentials: 'include'
-  }
-  // As rotas são configuráveis e ainda dependem do contrato oficial:
-  window.LF_API_ENDPOINTS = {
-    'clientes.listar': '/clientes',
-    'clientes.obter': '/clientes/{id}'
-    // ... demais chaves lógicas de front/js/services/api/index.js
-  }
-</script>
-```
-
-A lista completa de chaves, estados e regras de integração está em **[`front/README.md`](front/README.md)** e em **[`front/js/services/README.md`](front/js/services/README.md)**.
-
-## Backend Java implementado
-
-O backend fica em [`backend/`](backend/) e utiliza Java 21, Spring Boot 3.5.7, Spring Data JPA/Hibernate, Bean Validation, Maven e PostgreSQL 17.6. A herança `Pessoa → Cliente/Funcionaria` usa estratégia `JOINED` e é exercitada nos CRUDs.
-
-### Pré-requisitos
+## Pré-requisitos
 
 - JDK 21 LTS.
 - Maven 3.9 ou superior.
-- PostgreSQL 16 ou superior (o projeto foi validado com 17.6).
-- Node.js 18 ou superior para o servidor estático do frontend.
+- PostgreSQL 16 ou superior.
+- Node.js 18 ou superior.
 
-### Configurar o PostgreSQL e as variáveis
+## Configuração do PostgreSQL
 
-1. Inicie o PostgreSQL e, usando um usuário administrador do banco, crie o usuário e os bancos de desenvolvimento/teste. Exemplo ajustável à sua instalação:
+Crie os bancos de desenvolvimento e testes:
 
 ```sql
 CREATE ROLE linhafina LOGIN PASSWORD 'troque-por-uma-senha-local';
@@ -272,20 +73,9 @@ CREATE DATABASE linhafina OWNER linhafina;
 CREATE DATABASE linhafina_test OWNER linhafina;
 ```
 
-2. Copie `backend/.env.example` para `backend/.env` e substitua as senhas locais. Esse arquivo é ignorado pelo Git e não deve ser compartilhado.
+Copie `backend/.env.example` para `backend/.env` e configure as credenciais locais. O arquivo real é ignorado pelo Git.
 
-```properties
-DB_URL=jdbc:postgresql://localhost:5432/linhafina
-DB_USERNAME=linhafina
-DB_PASSWORD=troque-por-uma-senha-local
-APP_ADMIN_EMAIL=linha-fina@gmail.com
-APP_ADMIN_PASSWORD=troque-por-outra-senha-local
-APP_ADMIN_NAME=Administracao Local
-```
-
-3. Na primeira execução, se a tabela de usuários estiver vazia, o backend cria o administrador definido por `APP_ADMIN_*` com senha BCrypt. Não existe credencial fixa no código.
-
-### Executar o projeto completo
+## Executar
 
 No terminal do backend:
 
@@ -294,25 +84,54 @@ cd backend
 mvn spring-boot:run
 ```
 
-Em outro terminal, no frontend:
+No terminal do frontend:
 
 ```bash
 cd front
 node server.mjs
 ```
 
-Acesse `http://localhost:5180` e entre com o e-mail/senha configurados em `APP_ADMIN_*`. A API responde em `http://localhost:8080/api`.
+Acesse `http://localhost:5180` e entre com o administrador configurado em `APP_ADMIN_*`. A API responde em `http://localhost:8080/api`.
 
-No Windows, a preparação local já realizada neste projeto também pode ser iniciada por [`INICIAR.ps1`](INICIAR.ps1), que detecta as ferramentas portáteis existentes e evita duplicar servidores.
+No Windows, `INICIAR.ps1` prepara o PostgreSQL e evita duplicar servidores já ativos.
 
-### Testes e documentação
+## Testes
 
-- Testes Java: execute [`TESTAR.ps1`](TESTAR.ps1) ou `mvn clean test` em `backend/`.
-- Os testes usam `linhafina_test`, separado do desenvolvimento, nunca H2.
-- O teste E2E `tests/e2e/nucleo.cjs` percorre os formulários reais e limpa apenas os registros que criou.
-- Documentação de estudo: [`DOCUMENTACAO_JAVA.md`](DOCUMENTACAO_JAVA.md).
-- Resultados por fase: [`ACOMPANHAMENTO.md`](ACOMPANHAMENTO.md).
-- Relatório completo: [`RELATORIO_FINAL.md`](RELATORIO_FINAL.md).
-- Coleção para Postman: [`postman/README.md`](postman/README.md).
-- Deploy no Render: [`RENDER.md`](RENDER.md) e [`render.yaml`](render.yaml).
+```powershell
+.\TESTAR.ps1
+```
 
+ou:
+
+```bash
+cd backend
+mvn clean test
+```
+
+Com frontend e backend ativos:
+
+```bash
+node tests/e2e/mvp.cjs
+```
+
+Os testes Java usam `linhafina_test`, separado do desenvolvimento. O E2E cria e remove somente seus próprios registros.
+
+## API
+
+| Recurso | Operações |
+|---|---|
+| `/api/autenticacao/entrar` | POST email/senha |
+| `/api/autenticacao/sessao` | GET da sessão atual |
+| `/api/autenticacao/sair` | POST para logout |
+| `/api/clientes` | GET/POST |
+| `/api/clientes/{id}` | GET/PUT/DELETE |
+| `/api/ordens-servico` | GET/POST |
+| `/api/ordens-servico/{id}` | GET/PUT/DELETE |
+
+## Documentação
+
+- `DOCUMENTACAO_JAVA.md`: explicação das classes e conceitos de POO.
+- `RELATORIO_FINAL.md`: estrutura final, remoções e testes.
+- `docs/schema-postgresql.sql`: esquema do banco.
+- `postman/README.md`: coleção do Postman.
+- `RENDER.md`: deploy no Render.

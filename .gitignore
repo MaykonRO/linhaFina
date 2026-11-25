@@ -11,6 +11,9 @@ backend/src/main/resources/application-local.properties
 .tools/
 .referencias/
 
+# Backups locais anteriores a mudanças destrutivas
+backups/
+
 # Execução local do backend
 backend/data/
 backend/uploads/

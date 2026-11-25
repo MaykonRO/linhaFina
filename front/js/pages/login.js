@@ -7,7 +7,7 @@
 
 import { iniciarStore, acoes } from '../app/store.js'
 import { entrarSessao, iniciarSessao, restaurarSessao } from '../app/sessao.js'
-import { navegar, caminho } from '../app/rotas.js'
+import { navegar } from '../app/rotas.js'
 import { toast } from '../components/toast.js'
 import { marcaLinhaFina } from '../components/layout.js'
 import { h } from '../components/dom.js'
@@ -24,10 +24,9 @@ void restaurarSessao().then((sessao) => {
 })
 
 const DESTAQUES = [
-  { icone: 'ClipboardList', texto: 'Ordens de serviço com prazos e provas intermediárias' },
-  { icone: 'Scissors', texto: 'Catálogo de serviços com tempo estimado de execução' },
-  { icone: 'CalendarDays', texto: 'Agenda de entregas, provas e folgas do ateliê' },
-  { icone: 'Store', texto: 'Vitrine pública para as clientes do ateliê' },
+  { icone: 'Users', texto: 'Cadastro e contato dos clientes' },
+  { icone: 'ClipboardList', texto: 'Ordens de serviço com valores, prazos e status' },
+  { icone: 'LayoutDashboard', texto: 'Acesso simples às tarefas essenciais do ateliê' },
 ]
 
 const destino = document.getElementById('pagina')
@@ -149,7 +148,7 @@ function renderizar() {
           { class: 'login-painel-conteudo' },
           marcaLinhaFina({ tamanho: 'lg' }),
           h('p', { class: 'login-apresentacao' },
-            'Ordens de serviço, clientes, orçamentos e prazos do ateliê — costurados em um só lugar.'
+            'Clientes e ordens de serviço do ateliê — costurados em um só lugar.'
           )
         ),
         h(
@@ -187,12 +186,6 @@ function renderizar() {
               h('strong', {}, 'Sessão real.'),
               ' As credenciais são verificadas pela API. Nenhuma senha ou sessão é armazenada no armazenamento local deste navegador.'
             )
-          ),
-          h(
-            'p',
-            { class: 'login-link-vitrine' },
-            'Quer só espiar? ',
-            h('a', { href: caminho('vitrine-publica'), class: 'link-destacado' }, 'Veja a vitrine pública')
           )
         )
       )
