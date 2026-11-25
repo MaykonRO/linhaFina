@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict Xk6rGXX1fm0x0Ptwnl6VDa8QOPxVKcRe9ujPN2jaFeXJFsdavQ2WfOg8MIKKHKf
+\restrict qZuTjt9L6wscauA3qLpNwTdxc4lir6KGxLW3fLfen6WbjsiN6fAmKpzSc1QSOyG
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -158,5 +158,5 @@ ALTER TABLE ONLY public.ordens_servico
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Xk6rGXX1fm0x0Ptwnl6VDa8QOPxVKcRe9ujPN2jaFeXJFsdavQ2WfOg8MIKKHKf
+\unrestrict qZuTjt9L6wscauA3qLpNwTdxc4lir6KGxLW3fLfen6WbjsiN6fAmKpzSc1QSOyG
 

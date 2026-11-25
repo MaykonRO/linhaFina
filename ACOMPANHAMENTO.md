@@ -13,7 +13,7 @@ O sistema está reduzido aos módulos Login, Clientes e Ordens de Serviço.
 5. Migração para `usuarios`, `clientes` e `ordens_servico`.
 6. Navegação limitada a Dashboard, Clientes e OS.
 7. CRUD de clientes e OS integrado ao PostgreSQL.
-8. Testes Java e E2E executados com sucesso.
+8. Testes Java e E2E executados com sucesso no ambiente local e no Render.
 
 ## Resultados verificados
 

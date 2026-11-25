@@ -13,7 +13,7 @@ O Blueprint `render.yaml` mantém três recursos:
 
 ## Variáveis
 
-O Blueprint configura `DB_URL`, usuário e senha do PostgreSQL, `APP_ADMIN_*`, `APP_CORS_ORIGINS`, `COOKIE_SECURE` e `SERVER_SERVLET_SESSION_COOKIE_SAME_SITE`.
+O Blueprint configura `DB_URL`, usuário e senha do PostgreSQL, `APP_ADMIN_*`, `APP_CORS_ORIGINS`, `COOKIE_SECURE` e `SERVER_SERVLET_SESSION_COOKIE_SAME_SITE`. O health check usa `/api/saude`; `/api/configuracoes` permanece como alias de compatibilidade para o serviço atual.
 
 - O e-mail administrativo configurado é `linha-fina@gmail.com`.
 - A senha fica somente no painel do Render e no `.env` local, nunca no Git.

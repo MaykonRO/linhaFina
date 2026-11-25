@@ -98,7 +98,7 @@ Tabelas removidas:
 - `horarios_atendimento`
 - `dias_de_folga`
 
-A migração `backend/db/migration/V1__simplificar_mvp.sql` preserva IDs, códigos, clientes e OS existentes, converte os status antigos e cria `clientes_id_seq` para novos cadastros. A constraint antiga de status é removida.
+A migração `backend/db/migration/V1__simplificar_mvp.sql` preserva IDs, códigos, clientes e OS existentes, converte os status antigos e cria `clientes_id_seq` para novos cadastros. A constraint antiga de status é removida. `V2__limpeza_pos_deploy.sql` é idempotente e remove artefatos recriados se uma versão antiga for reiniciada durante a transição.
 
 O esquema atual está em `docs/schema-postgresql.sql`.
 
@@ -151,13 +151,20 @@ Fluxos aprovados:
 - viewports 390 px e 1440 px sem overflow;
 - limpeza dos registros no final, na ordem OS → cliente.
 
-Resultado: `consoleErrors: []` e `pageErrors: []`.
+Resultado: `consoleErrors: []` e `pageErrors: []`. O mesmo E2E foi executado com sucesso no ambiente local e nas URLs públicas do Render.
+
+### Health check
+
+- `/api/saude` e o alias de compatibilidade `/api/configuracoes` respondem `{"status":"ok"}`.
+- O Blueprint usa `/api/saude` para os próximos serviços.
 
 ## 7. Problemas corrigidos
 
 - Sequência de identidade dos clientes após a remoção da herança `Pessoa`.
 - Constraint antiga de status incompatível com os novos valores.
 - Verificação de viewport aguardando a estabilização das media queries, evitando falso positivo de overflow.
+- Health check do Render atualizado para o endpoint MVP.
+- Limpeza V2 de tabelas, colunas e constraints recriadas pela versão antiga durante a transição.
 
 ## 8. Problemas restantes
 
