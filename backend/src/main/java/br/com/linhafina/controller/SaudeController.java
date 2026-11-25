@@ -1,0 +1,15 @@
+package br.com.linhafina.controller;
+
+import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/** Endpoint público usado apenas pelo health check da infraestrutura. */
+@RestController
+public class SaudeController {
+
+    @GetMapping("/api/saude")
+    public Map<String, String> verificar() {
+        return Map.of("status", "ok");
+    }
+}

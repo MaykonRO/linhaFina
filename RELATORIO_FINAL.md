@@ -21,7 +21,7 @@ Orçamentos, pagamentos, financeiro avançado, dashboard com indicadores avança
 
 ## 2. Estrutura final do backend
 
-A produção passou de 89 para 27 arquivos Java, mantendo:
+A produção passou de 89 para 28 arquivos Java, mantendo:
 
 ```text
 LinhaFinaApplication
@@ -33,6 +33,7 @@ controller/
   AutenticacaoController
   ClienteController
   OrdemServicoController
+  SaudeController
 service/
   AutenticacaoService
   ClienteService

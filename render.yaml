@@ -10,7 +10,7 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    healthCheckPath: /api/configuracoes
+    healthCheckPath: /api/saude
     envVars:
       - key: DB_URL
         value: jdbc:postgresql://dpg-dc2c2vifngtc73bepv7g-a:5432/linhafina

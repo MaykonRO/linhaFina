@@ -120,6 +120,7 @@ Os testes Java usam `linhafina_test`, separado do desenvolvimento. O E2E cria e 
 
 | Recurso | Operações |
 |---|---|
+| `/api/saude` | GET público para health check |
 | `/api/autenticacao/entrar` | POST email/senha |
 | `/api/autenticacao/sessao` | GET da sessão atual |
 | `/api/autenticacao/sair` | POST para logout |

@@ -50,6 +50,7 @@ A API usa `http://localhost:8080/api`. Testes usam `linhafina_test`, sem H2.
 
 | Recurso | Operações |
 |---|---|
+| `/api/saude` | GET público para health check |
 | `/api/autenticacao/entrar` | POST |
 | `/api/autenticacao/sessao` | GET |
 | `/api/autenticacao/sair` | POST |

@@ -26,12 +26,13 @@ Antes de publicar o MVP sobre uma base antiga, confirme os backups e execute `ba
 
 ## Validação
 
-1. Abra `https://linha-fina-web.onrender.com`.
-2. Faça login com o administrador configurado.
-3. Cadastre uma cliente.
-4. Crie uma OS vinculada.
-5. Consulte, edite e exclua a OS.
-6. Exclua a cliente quando não houver OS vinculada.
+1. Verifique `https://linha-fina-api.onrender.com/api/saude` retornando `{"status":"ok"}`.
+2. Abra `https://linha-fina-web.onrender.com`.
+3. Faça login com o administrador configurado.
+4. Cadastre uma cliente.
+5. Crie uma OS vinculada.
+6. Consulte, edite e exclua a OS.
+7. Exclua a cliente quando não houver OS vinculada.
 
 ## Plano gratuito
 
